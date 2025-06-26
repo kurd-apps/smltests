@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Integrated Test Data Display with Search and Badges</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40JDrFNgyyAuBuBFFbJQfVq/1R/cjrB6bQxNfKbcFqSgQv8xG4qA/rB2lqW/aR0hU/2+yT+s0Gg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+
+    <style>.bg-gel { background-color: #bf0202; }.bg-edta { background-color: #78206d; }.bg-sodiumcitrate { background-color: #00b3f1; }.bg-plane { background-color: #FC4F00; } .bg-sodiumheparin { background-color: #8cdb73; }.bg-lithiumheparin { background-color: #176f21; }.bg-bigcup { background-color: #DC143C; }.bg-other { background-color: #7e7e7e; }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif; /* Applied Vazirmatn font */
+            display: flex;
+            flex-direction: column; /* Stack content vertically */
+            align-items: center;    /* Center horizontally */
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding-top: 20px; /* Space from top */
+        }
+
+        .navbar {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1020; /* Ensure navbar is above search card */
+        }
+
+        /* Wrapper to constrain max-width of the search component */
+        .search-wrapper {
+            width: 100%; /* Take full width on smaller screens */
+            max-width: 700px; /* Max width for the entire search area on larger screens */
+            padding: 0 15px; /* Add some horizontal padding for smaller screens */
+            box-sizing: border-box; /* Include padding in the element's total width */
+            position: relative;
+            margin-top: 20px; /* Space below navbar */
+        }
+
+        /* This is the ONE DIV for search bar AND suggestions */
+        .integrated-search-card {
+            background-color: #fff;
+            border: 1px solid #dfe1e5;
+            border-radius: 30px; /* More rounded corners for initial state */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease-in-out; /* Smooth transitions for expansion */
+            position: relative; /* Essential for containing expanded shadow */
+            width: 100%; /* Ensure it takes full width of its parent wrapper */
+        }
+
+        /* Styling when the card expands to show suggestions */
+        .integrated-search-card.expanded {
+            border-bottom-left-radius: 30px; /* More rounded at the bottom */
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Deeper shadow when expanded */
+        }
+
+        /* New wrapper for the search input and clear button */
+        .search-input-wrapper {
+            position: relative; /* Critical: This is now the positioning context for #clearSearch */
+            display: flex; /* Helps ensure input and icon are aligned */
+            align-items: center; /* Vertically align input and icon */
+            width: 100%; /* Ensure it fills the parent card */
+        }
+
+        /* The search input itself */
+        #testSearch {
+            width: 100%; /* Ensure it fills its new wrapper */
+            padding: 12px 20px;
+            padding-left: 45px; /* Space for search icon */
+            padding-right: 40px; /* Make space for the clear button */
+            border: none; /* Crucial: Remove input's own border */
+            border-radius: 30px; /* Keep input itself rounded for aesthetic */
+            font-size: 16px;
+            outline: none; /* Remove focus outline */
+            background-color: transparent; /* Make input background transparent */
+            box-sizing: border-box; /* Include padding in width */
+            text-align: left; /* Align text left as normal */
+            z-index: 1; /* Ensure input is above any background elements */
+        }
+
+        #testSearch::placeholder {
+            text-align: left; /* Keep placeholder left-aligned */
+        }
+
+        /* Search icon inside the input field */
+        #searchIcon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            z-index: 2;
+        }
+
+        /* Clear search icon within the input field */
+        #clearSearch {
+            position: absolute;
+            right: 15px; /* Adjusted to match left icon padding */
+            top: 50%; /* Center vertically within the search-input-wrapper */
+            transform: translateY(-50%);
+            color: #000; /* Default black color */
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 2; /* Ensure it's above the input text */
+            display: none; /* Hidden by default */
+        }
+
+        #clearSearch.visible { /* Class to show the button */
+            display: block;
+        }
+
+        #clearSearch:hover {
+            color: #dc3545; /* Red on hover */
+        }
+
+        /* Container for suggestions, hidden by default */
+        #suggestions {
+            display: none; /* Initially hidden */
+            max-height: 380px; /* Limit height and allow scrolling */
+            overflow-y: auto;
+            border-top: 1px solid #f0f0f0; /* Subtle separator line */
+            margin-top: 5px; /* Small space between input and suggestions */
+            padding-top: 5px; /* Internal padding */
+        }
+
+        /* Show suggestions when the parent card is expanded */
+        .integrated-search-card.expanded #suggestions {
+            display: block;
+        }
+
+        /* Your existing suggestion item styles (minor adjustments) */
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            background: #ffffff;
+            color: #343a40;
+            border-bottom: 1px solid #eff2f5;
+            transition: background 0.2s ease, color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            text-align: left;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background: #e9ecef;
+        }
+
+        .suggestion-item-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 4px;
+        }
+
+        .suggestion-item-row-2 {
+            width: 100%;
+        }
+
+        .suggestion-item-row-1 strong {
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+            padding-right: 10px;
+        }
+        .suggestion-item-row-2 small {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 0.8em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .suggestion-info-pills {
+            flex-shrink: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .suggestion-info-pills .badge {
+            font-size: 0.75em;
+            padding: 0.3em 0.6em;
+        }
+        /* Style for the dedicated total test count element */
+        #suggestionsFooter { /* Changed to ID for specific targeting */
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            font-size: 0.85rem;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 0; /* Remove margin from here */
+            border-radius: 0 0 30px 30px; /* Larger radius for the footer to match search bar */
+            display: none; /* Initially hidden */
+        }
+
+        /* General card styling for test details */
+        #singleCardContainer .card {
+            width: 100%; /* Take full width of its parent */
+            max-width: 1000px; /* Max width for the test detail card */
+            margin-top: 20px;
+            margin-bottom: 80px; /* Space above footer */
+            border-radius: 20px; /* More rounded for single card */
+        }
+
+        /* Adjustments for the modal form inputs */
+        .modal-body .inline-field {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        .modal-body .inline-field label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .modal-body .inline-field input {
+            width: 100%; /* Full width for inputs inside modal fields */
+        }
+        .modal-body .d-flex .form-group {
+            flex: 1; /* Make form groups in the d-flex row take equal space */
+        }
+ 
+
+        /* Ensure Bootstrap navbar items stack on smaller screens */
+        @media (max-width: 992px) { /* Before Bootstrap's 'lg' breakpoint */
+            .navbar-nav {
+                flex-direction: row !important;
+            }
+            .navbar-nav .nav-item {
+                margin-right: 15px; /* Remove horizontal margin */
+                margin-bottom: 5px; /* Add vertical spacing */
+            }
+             .navbar-nav .nav-item:hover {
+                font-weight: bold;
+                margin-right: 15px; /* Remove horizontal margin */
+                margin-bottom: 5px; /* Add vertical spacing */
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div aria-hidden='true' aria-labelledby='birthdateModalLabel' class='modal fade' id='birthdateModal' tabindex='-1'>
+        <div class='modal-dialog'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='birthdateModalLabel'>Calculate Your Birth Date</h5>
+                    <button aria-label='Close' class='btn-close' data-bs-dismiss='modal' type='button'></button>
+                </div>
+                <div class='modal-body'>
+                    <div class='mb-3' id='birthdateRow'>
+                        <div class='inline-field'>
+                            <label class='form-label' for='yearsInput'>Years: </label>
+                            <input class='form-control' id='yearsInput' oninput='calculateBirthDate()' placeholder='Enter years' type='number'/>
+                        </div>
+                        <div class='inline-field'>
+                            <label class='form-label' for='monthsInput'>Months: </label>
+                            <input class='form-control' id='monthsInput' oninput='calculateBirthDate()' placeholder='Enter months' type='number'/>
+                        </div>
+                        <div class='inline-field'>
+                            <label class='form-label' for='daysInput'>Days: </label>
+                            <input class='form-control' id='daysInput' oninput='calculateBirthDate()' placeholder='Enter days' type='number'/>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer justify-content-center'>
+                    <h3 class='font-weight-bold' id='birthDateResult'>0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div aria-hidden='true' aria-labelledby='discountModalLabel' class='modal fade' id='discountModal' role='dialog' tabindex='-1'>
+        <div class='modal-dialog '>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='discountModalLabel'>Discount Calculator</h5>
+                    <button aria-label='Close' class='btn-close' data-bs-dismiss='modal' type='button'></button>
+                </div>
+                <div class='modal-body'>
+                    <form name='discountCalculator'>
+                        <div class='form-group'>
+                            <h6>Price</h6>
+                            <input class='form-control' name='price' oninput='calculate()' required='' type='number'/>
+                        </div>
+                        <div class='form-group'>
+                            <h6>Discount %</h6>
+                            <input class='form-control' name='discount' oninput='calculate()' required='' type='number'/>
+                        </div>
+                        <div class='d-flex'>
+                            <div class='form-group' style='padding: 5px;'>
+                                <h6>After Discount</h6>
+                                <input class='form-control' name='afterDiscount' readonly='' type='number'/>
+                            </div>
+                            <div class='form-group' style='padding: 5px;'>
+                                <h6>Discount Amount</h6>
+                                <input class='form-control' name='disamount' readonly='' type='number'/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class='navbar navbar-expand-lg navbar-light bg-light sticky-top border-bottom'>
+        <div class='container pl-4 justify-content-center'>
+            <div class='row'>
+                <div class='container'>
+                    <div class='d-flex'>
+                        <ul class='navbar-nav mb-2 mb-lg-0 mx-auto'>
+                            <li class='nav-item'>
+                                <a class='nav-link' data-bs-target='#birthdateModal' data-bs-toggle='modal' href='#'>Birthdate Calculator</a>
+                            </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' data-bs-target='#disInstructionModal' data-bs-toggle='modal' href='#'>Discount Instruction</a>
+                            </li>
+                            <li class='nav-item'>
+                                <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="search-wrapper">
+        <div id="integratedSearchCard" class="integrated-search-card">
+            <div class="search-input-wrapper">
+                <i id="searchIcon" class="fa fa-search"></i>
+                <input type="text" id="testSearch" placeholder="Start typing to search for tests." autocomplete="off"/>
+                <i id="clearSearch" class="fa fa-solid fa-xmark"></i>
+            </div>
+            <div id="suggestions">
+                </div>
+            <div id="suggestionsFooter" class="suggestions-footer"></div>
+        </div>
+    </div>
+
+    <div class="container" id="singleCardContainer">
+        </div>
+
+    <footer class='bg-body-tertiary fixed-bottom text-center border-top'>
+        <div class='container'>
+            © <script>document.write( new Date().getFullYear() );</script> <span>Developed by <a class='text-decoration-none' href='https://www.behance.net/volakurd' style='color: #373A40;' target='_blank'><b>R.V</b></a></span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- Your existing data fetching and card display logic ---
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=0&single=true&output=csv';
+
+        let allData = [];
+        let testNames = []; // Stores objects: {name, subname, price, tubes, method, classes, fullItem}
+
+        function getRandomTestNames(count) {
+            if (testNames.length === 0) return [];
+            const shuffled = [...testNames].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        fetch(sheetUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(csvText => {
+                allData = parseCSV(csvText);
+                testNames = allData.map(item => ({
+                    name: item['name'] || '',
+                    subname: item['subname'] || '',
+                    price: item['price'] || '',
+                    tubes: item['tubes'] || '',
+                    method: item['method'] || '',
+                    classes: item['classes'] || '',
+                    fullItem: item // Keep reference to original full data for showCard
+                })).filter(item => item.name); // Only include items with a name
+            })
+            .catch(error => {
+                document.getElementById('singleCardContainer').innerHTML = '<div class="text-danger">Error loading data. Please try again later.</div>';
+                console.error('Error fetching CSV:', error);
+            });
+
+        function parseCSV(text) {
+            const rows = text.trim().split('\n');
+            const headers = rows[0].split(',').map(h => h.trim());
+            const data = rows.slice(1).map(row => {
+                const values = row.split(',');
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = values[index] ? values[index].trim() : '';
+                });
+                return obj;
+            });
+            return data;
+        }
+
+        function showCard(item) {
+          // Format price with commas
+    const priceFormatted = item['price']
+        ? item['price'].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' IQD'
+        : '';
+
+    // Check if link exists
+    const hasLink = item['link'] && item['link'].trim() !== '';
+            const container = document.getElementById('singleCardContainer');
+            container.innerHTML = `
+               <div class="card">
+    <div class="card-header "> <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0 d-inline"><strong>${item['name'] || 'No Name'}</strong></h5>
+            </div>
+            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                <button type="button" class="btn btn-outline-secondary" id="aboutBtn">About</button>
+                <button type="button" class="btn btn-outline-secondary" id="prepBtn">Preparation</button>
+            </div>
+        </div>
+        ${item['subname'] ? `<small class="d-block text-muted fst-italic mt-1">${item['subname']}</small>` : ''}
+    </div>
+    <div class="card-body">
+        <div class="row mb-3 text-center d-flex align-items-center justify-content-center">
+            <div class="col">
+                <h6 class="mb-1">Price</h6>
+                <p class="mb-0">${priceFormatted}</p>
+            </div>
+            <div class="col">
+                <h6 class="mb-1">Tubes</h6>
+                <div id="tubes-badges" class="d-flex flex-wrap"></div>
+            </div>
+            <div class="col">
+                <h6 class="mb-1">Method</h6>
+                <span class="badge rounded-pill bg-warning text-dark">${item['method'] || ''}</span>
+            </div>
+            <div class="col">
+                <h6 class="mb-1">Classes</h6>
+                <span class="badge rounded-pill bg-success ">${item['classes'] || ''}</span>
+            </div>
+            <div class="col">
+                <h6 class="mb-1">Link</h6>
+                ${hasLink ? `<a href="${item['link']}" target="_blank" class="badge rounded-pill bg-primary text-white text-decoration-none">Labels</a>` : ''}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col text-center">
+               <h6 class="mb-1">Time Finishing</h6>
+               <p class="mb-0" dir="rtl">${item['finishtime'] ? item['finishtime'].replace(/\./g, '<br/>') : ''}</p>
+            </div>
+        </div>
+        <div id="about" style="display: none;" dir="rtl">
+        <hr></hr>
+            <h6>دەربارەى پشکنینەکە</h6>
+            <p style="text-align: justify;">${item['about'] ? item['about'].replace(/\./g, '. <br/>') : ''}</p>
+        </div>
+        <div id="prep" style="display: none;" dir="rtl">
+        <hr></hr>
+            <h6>ئامادەکارى بۆ پشکنینەکە</h6>
+            <p style="text-align: justify;">${item['prep'] ? item['prep'].replace(/\./g, '. <br/>') : ''}</p>
+        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+        <small >${item['author'] || ''} | ${item['publishDate'] || ''}</small>
+        <small>Update date :${item['updateDate'] || ''}</small>
+    </div>
+</div>
+            `;
+
+            setTimeout(() => {
+                const aboutDiv = container.querySelector('#about');
+                const prepDiv = container.querySelector('#prep');
+                const aboutBtn = container.querySelector('#aboutBtn');
+                const prepBtn = container.querySelector('#prepBtn');
+
+                const toggleSection = (targetDiv, button) => {
+                    if (targetDiv.style.display === 'block') {
+                        targetDiv.style.display = 'none';
+                        button.classList.remove('active');
+                    } else {
+                        aboutDiv.style.display = 'none';
+                        prepDiv.style.display = 'none';
+                        aboutBtn.classList.remove('active');
+                        prepBtn.classList.remove('active');
+
+                        targetDiv.style.display = 'block';
+                        button.classList.add('active');
+                    }
+                };
+
+                aboutBtn.onclick = () => toggleSection(aboutDiv, aboutBtn);
+                prepBtn.onclick = () => toggleSection(prepDiv, prepBtn);
+            }, 0);
+
+            generateTubeBadges(item['tubes']);
+        }
+
+        function generateTubeBadges(tubesStr) {
+            const container = document.querySelector('#singleCardContainer #tubes-badges');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (!tubesStr) return;
+
+            const tubesArray = tubesStr.split('-').map(t => t.trim());
+            tubesArray.forEach(tube => {
+                const parts = tube.split(' ');
+                const tubeNumber = parts.pop();
+                const tubeName = parts.join(' ');
+
+                let colorClass = '';
+                if (/Gel/i.test(tubeName)) colorClass = 'bg-gel';
+                else if (/EDTA/i.test(tubeName)) colorClass = 'bg-edta';
+                else if (/SodiumCitrate/i.test(tubeName)) colorClass = 'bg-sodiumcitrate';
+                else if (/Plane/i.test(tubeName)) colorClass = 'bg-plane';
+                else if (/SodiumHeparin/i.test(tubeName)) colorClass = 'bg-sodiumheparin';
+                else if (/LithiumHeparin/i.test(tubeName)) colorClass = 'bg-lithiumheparin';
+                else if (/BigCup/i.test(tubeName)) colorClass = 'bg-bigcup';
+                else colorClass = 'bg-other';
+
+                const badge = document.createElement('span');
+                badge.className = `badge rounded-pill ${colorClass} me-1`;
+                badge.textContent = tubeNumber;
+                container.appendChild(badge);
+            });
+        }
+
+        // --- JavaScript for the new integrated search design ---
+        const searchInput = document.getElementById('testSearch');
+        const integratedSearchCard = document.getElementById('integratedSearchCard'); // Reference to the new parent div
+        const suggestionsBox = document.getElementById('suggestions');
+        const clearBtn = document.getElementById('clearSearch');
+        const singleCardContainer = document.getElementById('singleCardContainer');
+        const suggestionsFooter = document.getElementById('suggestionsFooter'); // Reference to the new footer div
+
+        let debounceTimeout;
+
+        // Function to expand the integrated search card
+        function expandIntegratedCard() {
+            if (!integratedSearchCard.classList.contains('expanded')) {
+                integratedSearchCard.classList.add('expanded');
+            }
+        }
+
+        // Function to collapse the integrated search card
+        function collapseIntegratedCard() {
+            if (integratedSearchCard.classList.contains('expanded')) {
+                integratedSearchCard.classList.remove('expanded');
+                suggestionsBox.innerHTML = ''; // Clear suggestions
+                if (suggestionsFooter) {
+                    suggestionsFooter.style.display = 'none'; // Hide the footer
+                }
+            }
+            clearBtn.classList.remove('visible'); // Hide clear button on collapse
+        }
+
+        // Function to toggle clear button visibility
+        function toggleClearButtonVisibility() {
+            if (searchInput.value.length > 0 || searchInput === document.activeElement) {
+                clearBtn.classList.add('visible');
+            } else {
+                clearBtn.classList.remove('visible');
+            }
+        }
+
+
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            collapseIntegratedCard(); // Use the new collapse function
+            singleCardContainer.innerHTML = ''; // Clear the displayed test card
+            searchInput.focus();
+            toggleClearButtonVisibility(); // Update visibility after clearing
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value === '') {
+                displayDefaultSuggestions();
+            } else {
+                const q = searchInput.value.toLowerCase();
+                const filtered = testNames.filter(item => item.name.toLowerCase().includes(q));
+                showFilteredSuggestions(filtered);
+            }
+            toggleClearButtonVisibility(); // Show clear button on focus
+        });
+
+        searchInput.addEventListener('blur', () => {
+            // Delay hiding the clear button slightly to allow click event on it
+            setTimeout(() => {
+                toggleClearButtonVisibility();
+                if (searchInput.value === '' && !integratedSearchCard.contains(document.activeElement)) {
+                    collapseIntegratedCard();
+                }
+            }, 100);
+        });
+
+        searchInput.addEventListener('input', () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    const q = searchInput.value.toLowerCase();
+    if (q) {
+      const filtered = testNames.filter(
+        item => item.name.toLowerCase().includes(q) || (item.subname && item.subname.toLowerCase().includes(q))
+      );
+      showFilteredSuggestions(filtered);
+    } else {
+      displayDefaultSuggestions();
+    }
+    toggleClearButtonVisibility(); // Update visibility on input
+  }, 300);
+});
+
+        // Your existing badge creation function (unchanged)
+        function createBadge(text, colorClass = 'bg-secondary') {
+            if (!text) return null;
+            const badge = document.createElement('span');
+            badge.className = `badge rounded-pill ${colorClass}`;
+            badge.textContent = text;
+            return badge;
+        }
+
+        // Your existing suggestion item creation function (unchanged)
+        function createSuggestionItem(item, iconClass = null) {
+            const btn = document.createElement('span');
+            btn.type = 'span';
+            btn.className = 'suggestion-item';
+            btn.setAttribute('aria-label', `Select ${item.name}`);
+
+            const row1 = document.createElement('div');
+            row1.className = 'suggestion-item-row-1';
+
+            const nameElement = document.createElement('strong');
+            nameElement.textContent = item.name;
+            row1.appendChild(nameElement);
+
+            const infoPillsDiv = document.createElement('div');
+            infoPillsDiv.className = 'suggestion-info-pills';
+
+
+            const priceBadge = createBadge(item.price + ' IQD', 'text-white bg-dark');
+            if (priceBadge) infoPillsDiv.appendChild(priceBadge);
+
+            const methodBadge = createBadge(item.method, 'bg-warning text-dark');
+            if (methodBadge) infoPillsDiv.appendChild(methodBadge);
+
+            const classesBadge = createBadge(item.classes, 'bg-success');
+            if (classesBadge) infoPillsDiv.appendChild(classesBadge);
+
+            if (item.tubes) {
+                const tubesArray = item.tubes.split('-').map(t => t.trim());
+                tubesArray.forEach(tube => {
+                    const parts = tube.split(' ');
+                    const tubeNumber = parts.pop();
+                    const tubeName = parts.join(' ');
+
+                    let colorClass = 'bg-secondary';
+                    if (/Gel/i.test(tubeName)) colorClass = 'bg-gel';
+                    else if (/EDTA/i.test(tubeName)) colorClass = 'bg-edta';
+                    else if (/SodiumCitrate/i.test(tubeName)) colorClass = 'bg-sodiumcitrate';
+                    else if (/Plane/i.test(tubeName)) colorClass = 'bg-plane';
+                    else if (/SodiumHeparin/i.test(tubeName)) colorClass = 'bg-sodiumheparin';
+                    else if (/LithiumHeparin/i.test(tubeName)) colorClass = 'bg-lithiumheparin';
+                    else if (/BigCup/i.test(tubeName)) colorClass = 'bg-bigcup';
+
+                    const tubeBadge = createBadge(tubeNumber, colorClass);
+                    if (tubeBadge) infoPillsDiv.appendChild(tubeBadge);
+                });
+            }
+
+            row1.appendChild(infoPillsDiv);
+            btn.appendChild(row1);
+
+            if (item.subname) {
+                const row2 = document.createElement('div');
+                row2.className = 'suggestion-item-row-2';
+                const subnameElement = document.createElement('small');
+                subnameElement.textContent = item.subname;
+                row2.appendChild(subnameElement);
+                btn.appendChild(row2);
+            }
+
+            btn.onclick = () => {
+                searchInput.value = item.name;
+                collapseIntegratedCard(); // Collapse the integrated card after selection
+                showCard(item.fullItem); // Display the full test card
+            };
+            return btn;
+        }
+
+        // Updated function to update the content and visibility of the pre-existing footer
+        function updateSuggestionsFooter(totalCount) {
+            if (suggestionsFooter) {
+                suggestionsFooter.textContent = `Total tests available: ${totalCount}`;
+                suggestionsFooter.style.display = 'block'; // Make it visible
+            }
+        }
+
+        function showFilteredSuggestions(suggestions) {
+            suggestionsBox.innerHTML = '';
+            const maxSuggestions = 5;
+
+            if (suggestions.length === 0) {
+                suggestionsBox.innerHTML = '<span class="suggestion-item text-muted disabled">No results found.</span>';
+            } else {
+                suggestions.slice(0, maxSuggestions).forEach(item => {
+                    suggestionsBox.appendChild(createSuggestionItem(item));
+                });
+            }
+            // Update the footer content and make it visible
+            updateSuggestionsFooter(testNames.length);
+            expandIntegratedCard(); // Expand the card to show filtered suggestions
+        }
+
+        function displayDefaultSuggestions() {
+            suggestionsBox.innerHTML = '';
+            const randomTests = getRandomTestNames(5);
+            if (randomTests.length > 0) {
+                randomTests.forEach(item => {
+                    suggestionsBox.appendChild(createSuggestionItem(item));
+                });
+            } else {
+                suggestionsBox.innerHTML = '<span class="suggestion-item text-muted disabled">Loading... If tests don\'t show, try clicking the search box again.</span>';
+            }
+            // Update the footer content and make it visible
+            updateSuggestionsFooter(testNames.length);
+            expandIntegratedCard(); // Expand the card to show default suggestions
+        }
+
+        // Handle clicks outside the integrated search card to collapse it
+        document.addEventListener('click', e => {
+            if (!integratedSearchCard.contains(e.target)) {
+                collapseIntegratedCard();
+            }
+        });
+
+        // Initial check for clear button visibility on page load
+        toggleClearButtonVisibility();
+
+        // --- Your existing modal JS functions (unchanged) ---
+        function calculateBirthDate() {
+            const currentDate = new Date();
+            const years = parseInt(document.getElementById("yearsInput").value) || 0;
+            const months = parseInt(document.getElementById("monthsInput").value) || 0;
+            const days = parseInt(document.getElementById("daysInput").value) || 0;
+            const birthDate = new Date(currentDate);
+            birthDate.setFullYear(currentDate.getFullYear() - years);
+            birthDate.setMonth(currentDate.getMonth() - months);
+            birthDate.setDate(currentDate.getDate() - days);
+            let day = birthDate.getDate();
+            let month = birthDate.getMonth() + 1;
+            let year = birthDate.getFullYear();
+            document.getElementById("birthDateResult").textContent = `${day}/${month.toString().padStart(2, '0')}/${year}`;
+        }
+
+        var birthModal = document.getElementById('birthdateModal');
+        birthModal.addEventListener('shown.bs.modal', function () {
+            document.getElementById('yearsInput').focus();
+        });
+
+        function calculate() {
+            var price = Number(document.discountCalculator.price.value);
+            var discount = Number(document.discountCalculator.discount.value);
+            var afterDiscount = price - (price * discount / 100);
+            var disamount = price * discount / 100;
+            document.discountCalculator.afterDiscount.value = Math.floor(afterDiscount);
+            document.discountCalculator.disamount.value = Math.floor(disamount);
+        }
+    </script>
+</body>
+</html>
+
+
+
+
