@@ -19,15 +19,12 @@
             flex-direction: column; /* Stack content vertically */
             align-items: center;    /* Center horizontally */
             min-height: 100vh;
-            background-color: #f8f9fa;
             margin: 0;
-            padding-top: 20px; /* Space from top */
         }
 
         .navbar {
             width: 100%;
             position: sticky;
-            top: 0;
             z-index: 1020; /* Ensure navbar is above search card */
         }
 
@@ -320,12 +317,12 @@
         </div>
     </div>
 
-    <nav class='navbar navbar-expand-lg navbar-light bg-light sticky-top border-bottom'>
+    <nav class='navbar navbar-expand-lg bg-light sticky-top border-bottom'>
         <div class='container pl-4 justify-content-center'>
             <div class='row'>
                 <div class='container'>
                     <div class='d-flex'>
-                        <ul class='navbar-nav mb-2 mb-lg-0 mx-auto'>
+                        <ul class='navbar-nav'>
                             <li class='nav-item'>
                                 <a class='nav-link' data-bs-target='#birthdateModal' data-bs-toggle='modal' href='#'>Birthdate Calculator</a>
                             </li>
