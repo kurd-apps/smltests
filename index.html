@@ -416,7 +416,7 @@
             return data;
         }
 
-        function showCard(item) {
+    function showCard(item) {
           // Format price with commas
     const priceFormatted = item['price']
         ? item['price'].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' IQD'
@@ -424,6 +424,12 @@
 
     // Check if link exists
     const hasLink = item['link'] && item['link'].trim() !== '';
+
+    // Determine if finishtime is "نەماوە" for conditional styling
+    const isFinishtimeNemawa = item['finishtime'] && item['finishtime'].trim() === 'نەماوە';
+    const finishtimeClass = isFinishtimeNemawa ? 'bg-danger text-white p-2 rounded' : ''; // Added p-2 and rounded for better appearance
+
+
             const container = document.getElementById('singleCardContainer');
             container.innerHTML = `
                <div class="card">
@@ -464,7 +470,7 @@
         <div class="row mb-3">
             <div class="col text-center">
                <h6 class="mb-1">Time Finishing</h6>
-               <p class="mb-0" dir="rtl">${item['finishtime'] ? item['finishtime'].replace(/\./g, '<br/>') : ''}</p>
+               <p class="mb-0 ${finishtimeClass}" dir="rtl">${item['finishtime'] ? item['finishtime'].replace(/\./g, '<br/>') : ''}</p>
             </div>
         </div>
         <div id="about" style="display: none;" dir="rtl">
@@ -512,7 +518,6 @@
 
             generateTubeBadges(item['tubes']);
         }
-
         function generateTubeBadges(tubesStr) {
             const container = document.querySelector('#singleCardContainer #tubes-badges');
             if (!container) return;
@@ -785,7 +790,3 @@
     </script>
 </body>
 </html>
-
-
-
-
