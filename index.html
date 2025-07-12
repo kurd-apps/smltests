@@ -284,6 +284,33 @@
             border-radius: 50%; /* Make it circular */
             vertical-align: middle; /* Align with text vertically */
         }
+
+        /* Popover specific styling */
+        .popover-header {
+            font-weight: bold;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .popover-body ul {
+            list-style: none; /* Remove bullet points */
+            padding: 0;
+            margin: 0;
+        }
+
+        .popover-body li {
+            padding: 0.25rem 0;
+            cursor: pointer; /* Indicate clickable items */
+        }
+
+        .popover-body li:hover {
+            background-color: #e9ecef; /* Hover effect for list items */
+        }
+
+        .popover-body hr {
+            border-top: 1px solid #eee;
+            margin: 0.5rem 0;
+        }
     </style>
 </head>
 <body>
@@ -365,17 +392,16 @@
                             <li class='nav-item'>
                                 <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
                             </li>
-                             <li class='nav-item dropdown' id="unavailableTestsNavItem">
-                                <a class='nav-link dropdown-toggle' href='#' id='unavailableTestsDropdown' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
+                            <li class='nav-item' id="unavailableTestsNavItem">
+                                <a class='nav-link' href='#' id='unavailableTestsPopoverTrigger'
+                                   data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
+                                   data-bs-title="Unavailable Tests" data-bs-content="Loading...">
                                     Unavailable Tests
                                     <span class="badge rounded-pill bg-danger ms-1 visually-hidden" id="unavailableTestsBadge">
                                         0
                                         <span class="visually-hidden">unavailable tests</span>
                                     </span>
                                 </a>
-                                <ul class='dropdown-menu' aria-labelledby='unavailableTestsDropdown' id="unavailableTestsMenu">
-                                    <!-- Unavailable tests will be populated here by JavaScript -->
-                                </ul>
                             </li>
                         </ul>
                     </div>
@@ -417,6 +443,9 @@
         let allData = [];
         let testNames = []; // Stores objects: {name, subname, price, tubes, method, classes, fullItem}
         let unavailableTests = new Set(); // Stores names of unavailable tests
+
+        // Store the popover instance
+        let unavailableTestsPopoverInstance = null;
 
         function getRandomTestNames(count) {
             if (testNames.length === 0) return [];
@@ -481,7 +510,7 @@
             if (testNames.length > 0) {
                 displayDefaultSuggestions();
             }
-            populateUnavailableTestsDropdown(); // Call this to populate the dropdown after data is ready
+            populateUnavailableTestsPopover(); // Call this to populate the popover after data is ready
         })
         .catch(error => {
             document.getElementById('singleCardContainer').innerHTML = '<div class="text-danger">Error loading data. Please try again later.</div>';
@@ -858,62 +887,80 @@
             expandIntegratedCard(); // Expand the card to show default suggestions
         }
 
-        // Function to populate the dropdown menu with unavailable test names
-        function populateUnavailableTestsDropdown() {
-            const dropdownMenu = document.getElementById('unavailableTestsMenu');
+        // Function to populate the popover content with unavailable test names
+        function populateUnavailableTestsPopover() {
             const unavailableTestsBadge = document.getElementById('unavailableTestsBadge');
-            dropdownMenu.innerHTML = ''; // Clear existing items
+            const popoverTrigger = document.getElementById('unavailableTestsPopoverTrigger');
+
+            let popoverContentHtml = '';
 
             if (unavailableTests.size === 0) {
-                const li = document.createElement('li');
-                li.innerHTML = '<span class="dropdown-item text-muted">No unavailable tests.</span>';
-                dropdownMenu.appendChild(li);
+                popoverContentHtml = '<p class="text-muted mb-0">No unavailable tests.</p>';
                 unavailableTestsBadge.classList.add('visually-hidden'); // Hide the badge
                 unavailableTestsBadge.textContent = '0';
-                return;
+            } else {
+                // Show and update the badge
+                unavailableTestsBadge.classList.remove('visually-hidden');
+                unavailableTestsBadge.textContent = unavailableTests.size.toString();
+
+                // Convert Set to Array and sort for consistent order
+                const sortedUnavailableTests = Array.from(unavailableTests).sort((a, b) => a.localeCompare(b));
+
+                let listItemsHtml = sortedUnavailableTests.map((testName, index, array) => {
+                    // Find the full item data for the unavailable test from allData (main sheet)
+                    const fullTestItem = allData.find(item => item.name === testName);
+                    const isClickableClass = fullTestItem ? '' : 'text-muted'; // Grey out if no full data
+                    const pointerEventsStyle = fullTestItem ? '' : 'pointer-events: none;'; // Make unclickable
+
+                    let itemHtml = `<li style="cursor: pointer; ${pointerEventsStyle}" data-test-name="${testName}" class="popover-list-item ${isClickableClass}">${testName}</li>`;
+                    if (index < array.length - 1) {
+                        itemHtml += '<hr>'; // Simple hr for separator
+                    }
+                    return itemHtml;
+                }).join('');
+
+                popoverContentHtml = `<ul>${listItemsHtml}</ul>`;
             }
 
-            // Show and update the badge
-            unavailableTestsBadge.classList.remove('visually-hidden');
-            unavailableTestsBadge.textContent = unavailableTests.size.toString();
+            // Update the popover's content
+            if (popoverTrigger) {
+                popoverTrigger.setAttribute('data-bs-content', popoverContentHtml);
 
-            // Convert Set to Array and sort for consistent order
-            const sortedUnavailableTests = Array.from(unavailableTests).sort((a, b) => a.localeCompare(b));
+                // If popover instance exists, update it. Otherwise, it will be initialized on DOMContentLoaded.
+                if (unavailableTestsPopoverInstance) {
+                    unavailableTestsPopoverInstance.setContent({
+                        '.popover-body': popoverContentHtml
+                    });
+                    // Re-attach click listeners for dynamically added popover list items
+                    attachPopoverItemClickListeners();
+                }
+            }
+        }
 
-            sortedUnavailableTests.forEach((testName, index) => {
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.className = 'dropdown-item';
-                a.href = '#';
-                a.textContent = testName;
+        function attachPopoverItemClickListeners() {
+            const popoverBody = document.querySelector('.popover-body'); // Popover body element
+            if (popoverBody) {
+                popoverBody.querySelectorAll('.popover-list-item').forEach(itemElement => {
+                    // Remove existing listeners to prevent duplicates
+                    itemElement.removeEventListener('click', handlePopoverItemClick);
+                    // Add new listener
+                    itemElement.addEventListener('click', handlePopoverItemClick);
+                });
+            }
+        }
 
-                // Find the full item data for the unavailable test from allData (main sheet)
+        function handlePopoverItemClick(e) {
+            const testName = e.target.getAttribute('data-test-name');
+            if (testName) {
                 const fullTestItem = allData.find(item => item.name === testName);
-
                 if (fullTestItem) {
-                    a.onclick = (e) => {
-                        e.preventDefault(); // Prevent default link behavior
-                        collapseIntegratedCard(); // Collapse search
-                        searchInput.value = ''; // Clear search input
-                        showCard(fullTestItem); // Show the card for the selected unavailable test
-                        // Hide dropdown after clicking an item
-                        bootstrap.Dropdown.getInstance(document.getElementById('unavailableTestsDropdown')).hide();
-                    };
-                } else {
-                    // Fallback if full data not found (shouldn't happen if logic is correct)
-                    a.classList.add('text-muted');
-                    a.style.pointerEvents = 'none'; // Make it unclickable
+                    showCard(fullTestItem);
+                    // Hide the popover after clicking an item
+                    if (unavailableTestsPopoverInstance) {
+                        unavailableTestsPopoverInstance.hide();
+                    }
                 }
-                li.appendChild(a);
-                dropdownMenu.appendChild(li);
-
-                // Add a divider after each item except the last one
-                if (index < sortedUnavailableTests.length - 1) {
-                    const divider = document.createElement('li');
-                    divider.innerHTML = '<hr class="dropdown-divider">';
-                    dropdownMenu.appendChild(divider);
-                }
-            });
+            }
         }
 
 
@@ -927,26 +974,18 @@
         // Initial check for clear button visibility on page load
         toggleClearButtonVisibility();
 
-        // --- Hover functionality for the Unavailable Tests dropdown ---
+        // Initialize popover and attach hover listeners
         document.addEventListener('DOMContentLoaded', () => {
-            const unavailableTestsNavItem = document.getElementById('unavailableTestsNavItem');
-            const dropdownToggle = document.getElementById('unavailableTestsDropdown');
-            let dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(dropdownToggle); // Get or create instance
-            let hoverTimeout;
-
-            if (unavailableTestsNavItem && dropdownToggle) {
-                unavailableTestsNavItem.addEventListener('mouseenter', () => {
-                    clearTimeout(hoverTimeout);
-                    dropdownInstance.show();
+            const popoverTrigger = document.getElementById('unavailableTestsPopoverTrigger');
+            if (popoverTrigger) {
+                unavailableTestsPopoverInstance = new bootstrap.Popover(popoverTrigger, {
+                    trigger: 'hover', // Activate on hover
+                    delay: { "show": 100, "hide": 200 }, // Small delay for better UX
+                    html: true // Allow HTML content in the popover
                 });
 
-                unavailableTestsNavItem.addEventListener('mouseleave', () => {
-                    hoverTimeout = setTimeout(() => {
-                        dropdownInstance.hide();
-                    }, 200); // Small delay to allow moving mouse within the dropdown
-                });
-
-                // Ensure dropdown closes if an item is clicked (handled in populateUnavailableTestsDropdown now)
+                // Re-attach click listeners for popover items when popover is shown
+                popoverTrigger.addEventListener('shown.bs.popover', attachPopoverItemClickListeners);
             }
         });
 
