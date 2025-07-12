@@ -6,13 +6,21 @@
     <title>SML Tests</title>
     <link rel="icon" href="https://icons.veryicon.com/png/o/healthcate-medical/mental-health-department-icon-library/clinical-laboratory.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40JDrFNgyyAuBuBFFbJQfVq/1R/cjrB6bQxNfKbcFqSgQv8xG4qA/rB2lqW/aR0hU/2+yT+s0Gg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" xintegrity="sha512-1ycn6IcaQQ40JDrFNgyyAuBuBFFbJQfVq/1R/cjrB6bQxNfKbcFqSgQv8xG4qA/rB2lqW/aR0hU/2+yT+s0Gg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
 
-    <style>.bg-gel { background-color: #bf0202; }.bg-edta { background-color: #78206d; }.bg-sodiumcitrate { background-color: #00b3f1; }.bg-plane { background-color: #FC4F00; } .bg-sodiumheparin { background-color: #8cdb73; }.bg-lithiumheparin { background-color: #176f21; }.bg-bigcup { background-color: #DC143C; }.bg-other { background-color: #7e7e7e; }
+    <style>
+        .bg-gel { background-color: #bf0202; }
+        .bg-edta { background-color: #78206d; }
+        .bg-sodiumcitrate { background-color: #00b3f1; }
+        .bg-plane { background-color: #FC4F00; }
+        .bg-sodiumheparin { background-color: #8cdb73; }
+        .bg-lithiumheparin { background-color: #176f21; }
+        .bg-bigcup { background-color: #DC143C; }
+        .bg-other { background-color: #7e7e7e; }
 
         body {
             font-family: 'Vazirmatn', sans-serif; /* Applied Vazirmatn font */
@@ -154,6 +162,17 @@
             background: #e9ecef;
         }
 
+        /* Styles for unavailable suggestion items */
+        .suggestion-item.unavailable {
+            color: #6c757d; /* Muted text for unavailable items */
+            cursor: not-allowed;
+        }
+
+        .suggestion-item.unavailable:hover {
+            background: #f8f9fa; /* Lighter hover background for unavailable items */
+        }
+
+
         .suggestion-item-row-1 {
             display: flex;
             justify-content: space-between;
@@ -234,7 +253,7 @@
         .modal-body .d-flex .form-group {
             flex: 1; /* Make form groups in the d-flex row take equal space */
         }
- 
+
 
         /* Ensure Bootstrap navbar items stack on smaller screens */
         @media (max-width: 992px) { /* Before Bootstrap's 'lg' breakpoint */
@@ -250,6 +269,26 @@
                 margin-right: 15px; /* Remove horizontal margin */
                 margin-bottom: 5px; /* Add vertical spacing */
             }
+        }
+
+        /* Custom styling for the notification badge */
+        .nav-item .nav-link.dropdown-toggle {
+            position: relative; /* Required for absolute positioning of the badge */
+        }
+
+        #unavailableTestsBadge {
+            font-size: 0.8em; /* Slightly larger font size for the badge */
+            padding: .3em .6em; /* Adjust padding for a slightly larger badge */
+            top: 0px; /* Position it slightly above the link */
+            right: 0px; /* Position it to the right of the link */
+            transform: translate(50%, -50%); /* Adjust to center it on the corner */
+            z-index: 10; /* Ensure it's above other elements */
+            border-radius: 50%; /* Make it circular */
+            display: flex; /* Use flexbox for centering content */
+            align-items: center; /* Vertically center content */
+            justify-content: center; /* Horizontally center content */
+            min-width: 1.5em; /* Ensure badge is wide enough for single digit */
+            height: 1.5em; /* Ensure badge is tall enough for single digit */
         }
 
     </style>
@@ -333,6 +372,18 @@
                             <li class='nav-item'>
                                 <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
                             </li>
+                             <li class='nav-item dropdown'>
+                                <a class='nav-link ' href='#' id='unavailableTestsDropdown' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
+                                    Unavailable Tests
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger visually-hidden" id="unavailableTestsBadge">
+                                        0
+                                        <span class="visually-hidden">unavailable tests</span>
+                                    </span>
+                                </a>
+                                <ul class='dropdown-menu' aria-labelledby='unavailableTestsDropdown' id="unavailableTestsMenu">
+                                    <!-- Unavailable tests will be populated here by JavaScript -->
+                                </ul>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -354,7 +405,8 @@
     </div>
 
     <div class="container" id="singleCardContainer">
-        </div>
+        <!-- This container will hold the test details or the list of unavailable tests -->
+    </div>
 
     <footer class='bg-body-tertiary fixed-bottom text-center border-top'>
         <div class='container'>
@@ -366,9 +418,13 @@
     <script>
         // --- Your existing data fetching and card display logic ---
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=0&single=true&output=csv';
+        // Re-introducing unavailableTestsUrl for Sheet3
+        const unavailableTestsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=2088118576&single=true&output=csv';
+
 
         let allData = [];
         let testNames = []; // Stores objects: {name, subname, price, tubes, method, classes, fullItem}
+        let unavailableTests = new Set(); // Stores names of unavailable tests
 
         function getRandomTestNames(count) {
             if (testNames.length === 0) return [];
@@ -376,29 +432,69 @@
             return shuffled.slice(0, count);
         }
 
-        fetch(sheetUrl)
-            .then(response => {
+        // Function to fetch unavailable tests from sheet3
+        async function fetchUnavailableTests() {
+            try {
+                const response = await fetch(unavailableTestsUrl);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                const csvText = await response.text();
+                const rows = csvText.trim().split('\n');
+                const headers = rows[0].split(',').map(h => h.trim());
+                const nameIndex = headers.indexOf('Test Name'); // Looking for 'Test Name' column
+                const statusIndex = headers.indexOf('Status'); // Looking for 'Status' column
+
+                if (nameIndex === -1 || statusIndex === -1) {
+                    console.warn("'Test Name' or 'Status' column not found in unavailable tests sheet. Cannot determine unavailable tests.");
+                    return;
+                }
+
+                rows.slice(1).forEach(row => {
+                    const values = row.split(',');
+                    const testName = values[nameIndex] ? values[nameIndex].trim() : '';
+                    const status = values[statusIndex] ? values[statusIndex].trim() : '';
+
+                    if (testName && status === 'Not Available') {
+                        unavailableTests.add(testName);
+                    }
+                });
+                console.log("Unavailable Tests Loaded from Sheet3 based on Status 'Not Available':", Array.from(unavailableTests));
+            } catch (error) {
+                console.error('Error fetching unavailable tests CSV from Sheet3:', error);
+            }
+        }
+
+        // Fetch both main data and unavailable tests concurrently
+        Promise.all([
+            fetch(sheetUrl).then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.text();
-            })
-            .then(csvText => {
-                allData = parseCSV(csvText);
-                testNames = allData.map(item => ({
-                    name: item['name'] || '',
-                    subname: item['subname'] || '',
-                    price: item['price'] || '',
-                    tubes: item['tubes'] || '',
-                    method: item['method'] || '',
-                    classes: item['classes'] || '',
-                    fullItem: item // Keep reference to original full data for showCard
-                })).filter(item => item.name); // Only include items with a name
-            })
-            .catch(error => {
-                document.getElementById('singleCardContainer').innerHTML = '<div class="text-danger">Error loading data. Please try again later.</div>';
-                console.error('Error fetching CSV:', error);
-            });
+            }),
+            fetchUnavailableTests() // This call initiates fetching from Sheet3
+        ])
+        .then(([csvText]) => {
+            allData = parseCSV(csvText);
+            testNames = allData.map(item => ({
+                name: item['name'] || '',
+                subname: item['subname'] || '',
+                price: item['price'] || '',
+                tubes: item['tubes'] || '',
+                method: item['method'] || '',
+                classes: item['classes'] || '',
+                fullItem: item // Keep reference to original full data for showCard
+            })).filter(item => item.name); // Only include items with a name
+
+            // After all data is loaded, display default suggestions
+            if (testNames.length > 0) {
+                displayDefaultSuggestions();
+            }
+            populateUnavailableTestsDropdown(); // Call this to populate the dropdown after data is ready
+        })
+        .catch(error => {
+            document.getElementById('singleCardContainer').innerHTML = '<div class="text-danger">Error loading data. Please try again later.</div>';
+            console.error('Error fetching CSV:', error);
+        });
 
         function parseCSV(text) {
             const rows = text.trim().split('\n');
@@ -415,107 +511,112 @@
         }
 
     function showCard(item) {
-          // Format price with commas
-    const priceFormatted = item['price']
-        ? item['price'].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' IQD'
-        : '';
+        // Check if the item is unavailable
+        const isUnavailable = unavailableTests.has(item['name']);
 
-    // Check if link exists
-    const hasLink = item['link'] && item['link'].trim() !== '';
+        // Format price with commas
+        const priceFormatted = item['price']
+            ? item['price'].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' IQD'
+            : '';
 
-    // Determine if finishtime is "نەماوە" for conditional styling
-    const isFinishtimeNemawa = item['finishtime'] && item['finishtime'].trim() === 'نەماوە';
-    const finishtimeClass = isFinishtimeNemawa ? 'bg-danger text-white p-2 rounded' : ''; // Added p-2 and rounded for better appearance
+        // Check if link exists
+        const hasLink = item['link'] && item['link'].trim() !== '';
+
+        // Determine if finishtime is "نەماوە" for conditional styling
+        const isFinishtimeNemawa = item['finishtime'] && item['finishtime'].trim() === 'نەماوە';
+        const finishtimeClass = isFinishtimeNemawa ? 'bg-danger text-white p-2 rounded' : ''; // Added p-2 and rounded for better appearance
 
 
-            const container = document.getElementById('singleCardContainer');
-            container.innerHTML = `
-               <div class="card">
-    <div class="card-header "> <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h5 class="mb-0 d-inline"><strong>${item['name'] || 'No Name'}</strong></h5>
-            </div>
-            <div class="btn-group" role="group" aria-label="Basic outlined example">
-                <button type="button" class="btn btn-outline-secondary" id="aboutBtn">About</button>
-                <button type="button" class="btn btn-outline-secondary" id="prepBtn">Preparation</button>
-            </div>
+        const container = document.getElementById('singleCardContainer');
+        container.innerHTML = `
+           <div class="card">
+<div class="card-header "> <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="mb-0 d-inline"><strong>${item['name'] || 'No Name'}</strong></h5>
+            ${isUnavailable ? '<span class="badge bg-danger ms-2">Not Available</span>' : ''} <!-- Unavailable Badge -->
         </div>
-        ${item['subname'] ? `<small class="d-block text-muted fst-italic mt-1">${item['subname']}</small>` : ''}
-    </div>
-    <div class="card-body">
-        <div class="row mb-3 text-center d-flex align-items-center justify-content-center">
-            <div class="col">
-                <h6 class="mb-1">Price</h6>
-                <p class="mb-0">${priceFormatted}</p>
-            </div>
-            <div class="col">
-                <h6 class="mb-1">Tubes</h6>
-                <div id="tubes-badges" class="d-flex flex-wrap"></div>
-            </div>
-            <div class="col">
-                <h6 class="mb-1">Method</h6>
-                <span class="badge rounded-pill bg-warning text-dark">${item['method'] || ''}</span>
-            </div>
-            <div class="col">
-                <h6 class="mb-1">Classes</h6>
-                <span class="badge rounded-pill bg-success ">${item['classes'] || ''}</span>
-            </div>
-            <div class="col">
-                <h6 class="mb-1">Link</h6>
-                ${hasLink ? `<a href="${item['link']}" target="_blank" class="badge rounded-pill bg-primary text-white text-decoration-none">Labels</a>` : ''}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col text-center">
-               <h6 class="mb-1">Time Finishing</h6>
-               <p class="mb-0 ${finishtimeClass}" dir="rtl">${item['finishtime'] ? item['finishtime'].replace(/\./g, '<br/>') : ''}</p>
-            </div>
-        </div>
-        <div id="about" style="display: none;" dir="rtl">
-        <hr></hr>
-            <h6>دەربارەى پشکنینەکە</h6>
-            <p style="text-align: justify;">${item['about'] ? item['about'].replace(/\./g, '. <br/>') : ''}</p>
-        </div>
-        <div id="prep" style="display: none;" dir="rtl">
-        <hr></hr>
-            <h6>ئامادەکارى بۆ پشکنینەکە</h6>
-            <p style="text-align: justify;">${item['prep'] ? item['prep'].replace(/\./g, '. <br/>') : ''}</p>
+        <div class="btn-group" role="group" aria-label="Basic outlined example">
+            <button type="button" class="btn btn-outline-secondary" id="aboutBtn">About</button>
+            <button type="button" class="btn btn-outline-secondary" id="prepBtn">Preparation</button>
         </div>
     </div>
-    <div class="card-footer d-flex justify-content-between">
-        <small >${item['author'] || ''} | ${item['publishDate'] || ''}</small>
-        <small>Update date :${item['updateDate'] || ''}</small>
+    ${item['subname'] ? `<small class="d-block text-muted fst-italic mt-1">${item['subname']}</small>` : ''}
+</div>
+<div class="card-body">
+    ${isUnavailable ? '<div class="alert alert-danger text-center" role="alert">This test is currently unavailable.</div>' : ''} <!-- Unavailable Notification -->
+    <div class="row mb-3 text-center d-flex align-items-center justify-content-center">
+        <div class="col">
+            <h6 class="mb-1">Price</h6>
+            <p class="mb-0">${priceFormatted}</p>
+        </div>
+        <div class="col">
+            <h6 class="mb-1">Tubes</h6>
+            <div id="tubes-badges" class="d-flex flex-wrap"></div>
+        </div>
+        <div class="col">
+            <h6 class="mb-1">Method</h6>
+            <span class="badge rounded-pill bg-warning text-dark">${item['method'] || ''}</span>
+        </div>
+        <div class="col">
+            <h6 class="mb-1">Classes</h6>
+            <span class="badge rounded-pill bg-success ">${item['classes'] || ''}</span>
+        </div>
+        <div class="col">
+            <h6 class="mb-1">Link</h6>
+            ${hasLink ? `<a href="${item['link']}" target="_blank" class="badge rounded-pill bg-primary text-white text-decoration-none">Labels</a>` : ''}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col text-center">
+           <h6 class="mb-1">Time Finishing</h6>
+           <p class="mb-0 ${finishtimeClass}" dir="rtl">${item['finishtime'] ? item['finishtime'].replace(/\./g, '<br/>') : ''}</p>
+        </div>
+    </div>
+    <div id="about" style="display: none;" dir="rtl">
+    <hr></hr>
+        <h6>دەربارەى پشکنینەکە</h6>
+        <p style="text-align: justify;">${item['about'] ? item['about'].replace(/\./g, '. <br/>') : ''}</p>
+    </div>
+    <div id="prep" style="display: none;" dir="rtl">
+    <hr></hr>
+        <h6>ئامادەکارى بۆ پشکنینەکە</h6>
+        <p style="text-align: justify;">${item['prep'] ? item['prep'].replace(/\./g, '. <br/>') : ''}</p>
     </div>
 </div>
-            `;
+<div class="card-footer d-flex justify-content-between">
+    <small >${item['author'] || ''} | ${item['publishDate'] || ''}</small>
+    <small>Update date :${item['updateDate'] || ''}</small>
+</div>
+</div>
+        `;
 
-            setTimeout(() => {
-                const aboutDiv = container.querySelector('#about');
-                const prepDiv = container.querySelector('#prep');
-                const aboutBtn = container.querySelector('#aboutBtn');
-                const prepBtn = container.querySelector('#prepBtn');
+        setTimeout(() => {
+            const aboutDiv = container.querySelector('#about');
+            const prepDiv = container.querySelector('#prep');
+            const aboutBtn = container.querySelector('#aboutBtn');
+            const prepBtn = container.querySelector('#prepBtn');
 
-                const toggleSection = (targetDiv, button) => {
-                    if (targetDiv.style.display === 'block') {
-                        targetDiv.style.display = 'none';
-                        button.classList.remove('active');
-                    } else {
-                        aboutDiv.style.display = 'none';
-                        prepDiv.style.display = 'none';
-                        aboutBtn.classList.remove('active');
-                        prepBtn.classList.remove('active');
+            const toggleSection = (targetDiv, button) => {
+                if (targetDiv.style.display === 'block') {
+                    targetDiv.style.display = 'none';
+                    button.classList.remove('active');
+                } else {
+                    aboutDiv.style.display = 'none';
+                    prepDiv.style.display = 'none';
+                    aboutBtn.classList.remove('active');
+                    prepBtn.classList.remove('active');
 
-                        targetDiv.style.display = 'block';
-                        button.classList.add('active');
-                    }
-                };
+                    targetDiv.style.display = 'block';
+                    button.classList.add('active');
+                }
+            };
 
-                aboutBtn.onclick = () => toggleSection(aboutDiv, aboutBtn);
-                prepBtn.onclick = () => toggleSection(prepDiv, prepBtn);
-            }, 0);
+            aboutBtn.onclick = () => toggleSection(aboutDiv, aboutBtn);
+            prepBtn.onclick = () => toggleSection(prepDiv, prepBtn);
+        }, 0);
 
-            generateTubeBadges(item['tubes']);
-        }
+        generateTubeBadges(item['tubes']);
+    }
         function generateTubeBadges(tubesStr) {
             const container = document.querySelector('#singleCardContainer #tubes-badges');
             if (!container) return;
@@ -615,20 +716,20 @@
         });
 
         searchInput.addEventListener('input', () => {
-  clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(() => {
-    const q = searchInput.value.toLowerCase();
-    if (q) {
-      const filtered = testNames.filter(
-        item => item.name.toLowerCase().includes(q) || (item.subname && item.subname.toLowerCase().includes(q))
-      );
-      showFilteredSuggestions(filtered);
-    } else {
-      displayDefaultSuggestions();
-    }
-    toggleClearButtonVisibility(); // Update visibility on input
-  }, 300);
-});
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                const q = searchInput.value.toLowerCase();
+                if (q) {
+                    const filtered = testNames.filter(
+                        item => item.name.toLowerCase().includes(q) || (item.subname && item.subname.toLowerCase().includes(q))
+                    );
+                    showFilteredSuggestions(filtered);
+                } else {
+                    displayDefaultSuggestions();
+                }
+                toggleClearButtonVisibility(); // Update visibility on input
+            }, 300);
+        });
 
         // Your existing badge creation function (unchanged)
         function createBadge(text, colorClass = 'bg-secondary') {
@@ -646,6 +747,12 @@
             btn.className = 'suggestion-item';
             btn.setAttribute('aria-label', `Select ${item.name}`);
 
+            const isUnavailable = unavailableTests.has(item.name);
+            if (isUnavailable) {
+                btn.classList.add('unavailable');
+                btn.setAttribute('title', 'This test is currently unavailable.');
+            }
+
             const row1 = document.createElement('div');
             row1.className = 'suggestion-item-row-1';
 
@@ -656,36 +763,41 @@
             const infoPillsDiv = document.createElement('div');
             infoPillsDiv.className = 'suggestion-info-pills';
 
+            if (isUnavailable) {
+                const unavailableBadge = createBadge('Unavailable', 'bg-danger');
+                if (unavailableBadge) infoPillsDiv.appendChild(unavailableBadge);
+            } else {
+                const priceBadge = createBadge(item.price + ' IQD', 'text-white bg-dark');
+                if (priceBadge) infoPillsDiv.appendChild(priceBadge);
 
-            const priceBadge = createBadge(item.price + ' IQD', 'text-white bg-dark');
-            if (priceBadge) infoPillsDiv.appendChild(priceBadge);
+                const methodBadge = createBadge(item.method, 'bg-warning text-dark');
+                if (methodBadge) infoPillsDiv.appendChild(methodBadge);
 
-            const methodBadge = createBadge(item.method, 'bg-warning text-dark');
-            if (methodBadge) infoPillsDiv.appendChild(methodBadge);
+                const classesBadge = createBadge(item.classes, 'bg-success');
+                if (classesBadge) infoPillsDiv.appendChild(classesBadge);
 
-            const classesBadge = createBadge(item.classes, 'bg-success');
-            if (classesBadge) infoPillsDiv.appendChild(classesBadge);
+                if (item.tubes) {
+                    const tubesArray = item.tubes.split('-').map(t => t.trim());
+                    tubesArray.forEach(tube => {
+                        const parts = tube.split(' ');
+                        const tubeNumber = parts.pop();
+                        const tubeName = parts.join(' ');
 
-            if (item.tubes) {
-                const tubesArray = item.tubes.split('-').map(t => t.trim());
-                tubesArray.forEach(tube => {
-                    const parts = tube.split(' ');
-                    const tubeNumber = parts.pop();
-                    const tubeName = parts.join(' ');
+                        let colorClass = 'bg-secondary';
+                        if (/Gel/i.test(tubeName)) colorClass = 'bg-gel';
+                        else if (/EDTA/i.test(tubeName)) colorClass = 'bg-edta';
+                        else if (/SodiumCitrate/i.test(tubeName)) colorClass = 'bg-sodiumcitrate';
+                        else if (/Plane/i.test(tubeName)) colorClass = 'bg-plane';
+                        else if (/SodiumHeparin/i.test(tubeName)) colorClass = 'bg-sodiumheparin';
+                        else if (/LithiumHeparin/i.test(tubeName)) colorClass = 'bg-lithiumheparin';
+                        else if (/BigCup/i.test(tubeName)) colorClass = 'bg-bigcup';
 
-                    let colorClass = 'bg-secondary';
-                    if (/Gel/i.test(tubeName)) colorClass = 'bg-gel';
-                    else if (/EDTA/i.test(tubeName)) colorClass = 'bg-edta';
-                    else if (/SodiumCitrate/i.test(tubeName)) colorClass = 'bg-sodiumcitrate';
-                    else if (/Plane/i.test(tubeName)) colorClass = 'bg-plane';
-                    else if (/SodiumHeparin/i.test(tubeName)) colorClass = 'bg-sodiumheparin';
-                    else if (/LithiumHeparin/i.test(tubeName)) colorClass = 'bg-lithiumheparin';
-                    else if (/BigCup/i.test(tubeName)) colorClass = 'bg-bigcup';
-
-                    const tubeBadge = createBadge(tubeNumber, colorClass);
-                    if (tubeBadge) infoPillsDiv.appendChild(tubeBadge);
-                });
+                        const tubeBadge = createBadge(tubeNumber, colorClass);
+                        if (tubeBadge) infoPillsDiv.appendChild(tubeBadge);
+                    });
+                }
             }
+
 
             row1.appendChild(infoPillsDiv);
             btn.appendChild(row1);
@@ -699,11 +811,19 @@
                 btn.appendChild(row2);
             }
 
-            btn.onclick = () => {
-                searchInput.value = item.name;
-                collapseIntegratedCard(); // Collapse the integrated card after selection
-                showCard(item.fullItem); // Display the full test card
-            };
+            // Only set onclick if the item is NOT unavailable
+            if (!isUnavailable) {
+                btn.onclick = () => {
+                    searchInput.value = item.name;
+                    collapseIntegratedCard(); // Collapse the integrated card after selection
+                    showCard(item.fullItem); // Display the full test card
+                };
+            } else {
+                 btn.onclick = (e) => { // Prevent selection for unavailable items
+                    e.stopPropagation();
+                    e.preventDefault();
+                };
+            }
             return btn;
         }
 
@@ -745,6 +865,63 @@
             updateSuggestionsFooter(testNames.length);
             expandIntegratedCard(); // Expand the card to show default suggestions
         }
+
+        // New function to populate the dropdown menu with unavailable test names
+        function populateUnavailableTestsDropdown() {
+            const dropdownMenu = document.getElementById('unavailableTestsMenu');
+            const unavailableTestsBadge = document.getElementById('unavailableTestsBadge');
+            dropdownMenu.innerHTML = ''; // Clear existing items
+
+            if (unavailableTests.size === 0) {
+                const li = document.createElement('li');
+                li.innerHTML = '<span class="dropdown-item text-muted">No unavailable tests.</span>';
+                dropdownMenu.appendChild(li);
+                unavailableTestsBadge.classList.add('visually-hidden'); // Hide the badge
+                unavailableTestsBadge.textContent = '0';
+                return;
+            }
+
+            // Show and update the badge
+            unavailableTestsBadge.classList.remove('visually-hidden');
+            unavailableTestsBadge.textContent = unavailableTests.size.toString();
+
+            // Convert Set to Array and sort for consistent order
+            const sortedUnavailableTests = Array.from(unavailableTests).sort((a, b) => a.localeCompare(b));
+
+            sortedUnavailableTests.forEach((testName, index) => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.className = 'dropdown-item';
+                a.href = '#';
+                a.textContent = testName;
+
+                // Find the full item data for the unavailable test from allData (main sheet)
+                const fullTestItem = allData.find(item => item.name === testName);
+
+                if (fullTestItem) {
+                    a.onclick = (e) => {
+                        e.preventDefault(); // Prevent default link behavior
+                        collapseIntegratedCard(); // Collapse search
+                        searchInput.value = ''; // Clear search input
+                        showCard(fullTestItem); // Show the card for the selected unavailable test
+                    };
+                } else {
+                    // Fallback if full data not found (shouldn't happen if logic is correct)
+                    a.classList.add('text-muted');
+                    a.style.pointerEvents = 'none'; // Make it unclickable
+                }
+                li.appendChild(a);
+                dropdownMenu.appendChild(li);
+
+                // Add a divider after each item except the last one
+                if (index < sortedUnavailableTests.length - 1) {
+                    const divider = document.createElement('li');
+                    divider.innerHTML = '<hr class="dropdown-divider">';
+                    dropdownMenu.appendChild(divider);
+                }
+            });
+        }
+
 
         // Handle clicks outside the integrated search card to collapse it
         document.addEventListener('click', e => {
