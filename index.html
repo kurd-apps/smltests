@@ -271,26 +271,19 @@
             }
         }
 
-        /* Custom styling for the notification badge */
-        .nav-item .nav-link.dropdown-toggle {
-            position: relative; /* Required for absolute positioning of the badge */
-        }
-
+        /* Custom styling for the notification badge (now inline) */
         #unavailableTestsBadge {
             font-size: 0.8em; /* Slightly larger font size for the badge */
             padding: .3em .6em; /* Adjust padding for a slightly larger badge */
-            top: 0px; /* Position it slightly above the link */
-            right: 0px; /* Position it to the right of the link */
-            transform: translate(50%, -50%); /* Adjust to center it on the corner */
-            z-index: 10; /* Ensure it's above other elements */
-            border-radius: 50%; /* Make it circular */
-            display: flex; /* Use flexbox for centering content */
+            margin-left: 5px; /* Space between text and badge */
+            display: inline-flex; /* Use inline-flex for centering content within the badge */
             align-items: center; /* Vertically center content */
             justify-content: center; /* Horizontally center content */
             min-width: 1.5em; /* Ensure badge is wide enough for single digit */
             height: 1.5em; /* Ensure badge is tall enough for single digit */
+            border-radius: 50%; /* Make it circular */
+            vertical-align: middle; /* Align with text vertically */
         }
-
     </style>
 </head>
 <body>
@@ -372,10 +365,10 @@
                             <li class='nav-item'>
                                 <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
                             </li>
-                             <li class='nav-item dropdown'>
-                                <a class='nav-link ' href='#' id='unavailableTestsDropdown' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
+                             <li class='nav-item dropdown' id="unavailableTestsNavItem">
+                                <a class='nav-link dropdown-toggle' href='#' id='unavailableTestsDropdown' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
                                     Unavailable Tests
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger visually-hidden" id="unavailableTestsBadge">
+                                    <span class="badge rounded-pill bg-danger ms-1 visually-hidden" id="unavailableTestsBadge">
                                         0
                                         <span class="visually-hidden">unavailable tests</span>
                                     </span>
@@ -418,7 +411,6 @@
     <script>
         // --- Your existing data fetching and card display logic ---
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=0&single=true&output=csv';
-        // Re-introducing unavailableTestsUrl for Sheet3
         const unavailableTestsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=2088118576&single=true&output=csv';
 
 
@@ -866,7 +858,7 @@
             expandIntegratedCard(); // Expand the card to show default suggestions
         }
 
-        // New function to populate the dropdown menu with unavailable test names
+        // Function to populate the dropdown menu with unavailable test names
         function populateUnavailableTestsDropdown() {
             const dropdownMenu = document.getElementById('unavailableTestsMenu');
             const unavailableTestsBadge = document.getElementById('unavailableTestsBadge');
@@ -904,6 +896,8 @@
                         collapseIntegratedCard(); // Collapse search
                         searchInput.value = ''; // Clear search input
                         showCard(fullTestItem); // Show the card for the selected unavailable test
+                        // Hide dropdown after clicking an item
+                        bootstrap.Dropdown.getInstance(document.getElementById('unavailableTestsDropdown')).hide();
                     };
                 } else {
                     // Fallback if full data not found (shouldn't happen if logic is correct)
@@ -932,6 +926,30 @@
 
         // Initial check for clear button visibility on page load
         toggleClearButtonVisibility();
+
+        // --- Hover functionality for the Unavailable Tests dropdown ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const unavailableTestsNavItem = document.getElementById('unavailableTestsNavItem');
+            const dropdownToggle = document.getElementById('unavailableTestsDropdown');
+            let dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(dropdownToggle); // Get or create instance
+            let hoverTimeout;
+
+            if (unavailableTestsNavItem && dropdownToggle) {
+                unavailableTestsNavItem.addEventListener('mouseenter', () => {
+                    clearTimeout(hoverTimeout);
+                    dropdownInstance.show();
+                });
+
+                unavailableTestsNavItem.addEventListener('mouseleave', () => {
+                    hoverTimeout = setTimeout(() => {
+                        dropdownInstance.hide();
+                    }, 200); // Small delay to allow moving mouse within the dropdown
+                });
+
+                // Ensure dropdown closes if an item is clicked (handled in populateUnavailableTestsDropdown now)
+            }
+        });
+
 
         // --- Your existing modal JS functions (unchanged) ---
         function calculateBirthDate() {
