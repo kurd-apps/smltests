@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
 
     <style>
+        /* Existing styles */
         .bg-gel { background-color: #bf0202; }
         .bg-edta { background-color: #78206d; }
         .bg-sodiumcitrate { background-color: #00b3f1; }
@@ -23,10 +24,10 @@
         .bg-other { background-color: #7e7e7e; }
 
         body {
-            font-family: 'Vazirmatn', sans-serif; /* Applied Vazirmatn font */
+            font-family: 'Vazirmatn', sans-serif;
             display: flex;
-            flex-direction: column; /* Stack content vertically */
-            align-items: center;    /* Center horizontally */
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
             margin: 0;
         }
@@ -34,66 +35,60 @@
         .navbar {
             width: 100%;
             position: sticky;
-            z-index: 1020; /* Ensure navbar is above search card */
+            z-index: 1020;
         }
 
-        /* Wrapper to constrain max-width of the search component */
         .search-wrapper {
-            width: 100%; /* Take full width on smaller screens */
-            max-width: 700px; /* Max width for the entire search area on larger screens */
-            padding: 0 15px; /* Add some horizontal padding for smaller screens */
-            box-sizing: border-box; /* Include padding in the element's total width */
+            width: 100%;
+            max-width: 700px;
+            padding: 0 15px;
+            box-sizing: border-box;
             position: relative;
-            margin-top: 20px; /* Space below navbar */
+            margin-top: 20px;
         }
 
-        /* This is the ONE DIV for search bar AND suggestions */
         .integrated-search-card {
             background-color: #fff;
             border: 1px solid #dfe1e5;
-            border-radius: 30px; /* More rounded corners for initial state */
+            border-radius: 30px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease-in-out; /* Smooth transitions for expansion */
-            position: relative; /* Essential for containing expanded shadow */
-            width: 100%; /* Ensure it takes full width of its parent wrapper */
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            width: 100%;
         }
 
-        /* Styling when the card expands to show suggestions */
         .integrated-search-card.expanded {
-            border-bottom-left-radius: 30px; /* More rounded at the bottom */
+            border-bottom-left-radius: 30px;
             border-bottom-right-radius: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Deeper shadow when expanded */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        /* New wrapper for the search input and clear button */
         .search-input-wrapper {
-            position: relative; /* Critical: This is now the positioning context for #clearSearch */
-            display: flex; /* Helps ensure input and icon are aligned */
-            align-items: center; /* Vertically align input and icon */
-            width: 100%; /* Ensure it fills the parent card */
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
         }
 
-        /* The search input itself */
         #testSearch {
-            width: 100%; /* Ensure it fills its new wrapper */
+            width: 100%;
             padding: 12px 20px;
-            padding-left: 45px; /* Space for search icon */
-            padding-right: 40px; /* Make space for the clear button */
-            border: none; /* Crucial: Remove input's own border */
-            border-radius: 30px; /* Keep input itself rounded for aesthetic */
+            padding-left: 45px;
+            padding-right: 40px;
+            border: none;
+            border-radius: 30px;
             font-size: 16px;
-            outline: none; /* Remove focus outline */
-            background-color: transparent; /* Make input background transparent */
-            box-sizing: border-box; /* Include padding in width */
-            text-align: left; /* Align text left as normal */
-            z-index: 1; /* Ensure input is above any background elements */
+            outline: none;
+            background-color: transparent;
+            box-sizing: border-box;
+            text-align: left;
+            z-index: 1;
         }
 
         #testSearch::placeholder {
-            text-align: left; /* Keep placeholder left-aligned */
+            text-align: left;
         }
 
-        /* Search icon inside the input field */
         #searchIcon {
             position: absolute;
             left: 15px;
@@ -103,43 +98,39 @@
             z-index: 2;
         }
 
-        /* Clear search icon within the input field */
         #clearSearch {
             position: absolute;
-            right: 15px; /* Adjusted to match left icon padding */
-            top: 50%; /* Center vertically within the search-input-wrapper */
+            right: 15px;
+            top: 50%;
             transform: translateY(-50%);
-            color: #000; /* Default black color */
+            color: #000;
             cursor: pointer;
             transition: color 0.3s ease;
-            z-index: 2; /* Ensure it's above the input text */
-            display: none; /* Hidden by default */
+            z-index: 2;
+            display: none;
         }
 
-        #clearSearch.visible { /* Class to show the button */
+        #clearSearch.visible {
             display: block;
         }
 
         #clearSearch:hover {
-            color: #dc3545; /* Red on hover */
+            color: #dc3545;
         }
 
-        /* Container for suggestions, hidden by default */
         #suggestions {
-            display: none; /* Initially hidden */
-            max-height: 380px; /* Limit height and allow scrolling */
+            display: none;
+            max-height: 380px;
             overflow-y: auto;
-            border-top: 1px solid #f0f0f0; /* Subtle separator line */
-            margin-top: 5px; /* Small space between input and suggestions */
-            padding-top: 5px; /* Internal padding */
+            border-top: 1px solid #f0f0f0;
+            margin-top: 5px;
+            padding-top: 5px;
         }
 
-        /* Show suggestions when the parent card is expanded */
         .integrated-search-card.expanded #suggestions {
             display: block;
         }
 
-        /* Your existing suggestion item styles (minor adjustments) */
         .suggestion-item {
             padding: 12px 20px;
             cursor: pointer;
@@ -162,14 +153,13 @@
             background: #e9ecef;
         }
 
-        /* Styles for unavailable suggestion items */
         .suggestion-item.unavailable {
-            color: #6c757d; /* Muted text for unavailable items */
+            color: #6c757d;
             cursor: not-allowed;
         }
 
         .suggestion-item.unavailable:hover {
-            background: #f8f9fa; /* Lighter hover background for unavailable items */
+            background: #f8f9fa;
         }
 
 
@@ -215,29 +205,27 @@
             font-size: 0.75em;
             padding: 0.3em 0.6em;
         }
-        /* Style for the dedicated total test count element */
-        #suggestionsFooter { /* Changed to ID for specific targeting */
+
+        #suggestionsFooter {
             padding: 10px 20px;
             background: #f8f9fa;
             border-top: 1px solid #dee2e6;
             font-size: 0.85rem;
             color: #6c757d;
             text-align: center;
-            margin-top: 0; /* Remove margin from here */
-            border-radius: 0 0 30px 30px; /* Larger radius for the footer to match search bar */
-            display: none; /* Initially hidden */
+            margin-top: 0;
+            border-radius: 0 0 30px 30px;
+            display: none;
         }
 
-        /* General card styling for test details */
         #singleCardContainer .card {
-            width: 100%; /* Take full width of its parent */
-            max-width: 1000px; /* Max width for the test detail card */
+            width: 100%;
+            max-width: 1000px;
             margin-top: 20px;
-            margin-bottom: 80px; /* Space above footer */
-            border-radius: 20px; /* More rounded for single card */
+            margin-bottom: 80px;
+            border-radius: 20px;
         }
 
-        /* Adjustments for the modal form inputs */
         .modal-body .inline-field {
             display: flex;
             flex-direction: column;
@@ -248,44 +236,42 @@
             font-weight: bold;
         }
         .modal-body .inline-field input {
-            width: 100%; /* Full width for inputs inside modal fields */
+            width: 100%;
         }
         .modal-body .d-flex .form-group {
-            flex: 1; /* Make form groups in the d-flex row take equal space */
+            flex: 1;
         }
 
 
-        /* Ensure Bootstrap navbar items stack on smaller screens */
-        @media (max-width: 992px) { /* Before Bootstrap's 'lg' breakpoint */
+        /* Removed custom media query for navbar-nav as Bootstrap handles it */
+        /* @media (max-width: 992px) {
             .navbar-nav {
                 flex-direction: row !important;
             }
             .navbar-nav .nav-item {
-                margin-right: 15px; /* Remove horizontal margin */
-                margin-bottom: 5px; /* Add vertical spacing */
+                margin-right: 15px;
+                margin-bottom: 5px;
             }
              .navbar-nav .nav-item:hover {
                 font-weight: bold;
-                margin-right: 15px; /* Remove horizontal margin */
-                margin-bottom: 5px; /* Add vertical spacing */
+                margin-right: 15px;
+                margin-bottom: 5px;
             }
-        }
+        } */
 
-        /* Custom styling for the notification badge (now inline) */
         #unavailableTestsBadge {
-            font-size: 0.8em; /* Slightly larger font size for the badge */
-            padding: .3em .6em; /* Adjust padding for a slightly larger badge */
-            margin-left: 5px; /* Space between text and badge */
-            display: inline-flex; /* Use inline-flex for centering content within the badge */
-            align-items: center; /* Vertically center content */
-            justify-content: center; /* Horizontally center content */
-            min-width: 1.5em; /* Ensure badge is wide enough for single digit */
-            height: 1.5em; /* Ensure badge is tall enough for single digit */
-            border-radius: 50%; /* Make it circular */
-            vertical-align: middle; /* Align with text vertically */
+            font-size: 0.8em;
+            padding: .3em .6em;
+            margin-left: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.5em;
+            height: 1.5em;
+            border-radius: 50%;
+            vertical-align: middle;
         }
 
-        /* Popover specific styling */
         .popover-header {
             font-weight: bold;
             background-color: #f8f9fa;
@@ -293,167 +279,311 @@
         }
 
         .popover-body ul {
-            list-style: none; /* Remove bullet points */
+            list-style: none;
             padding: 0;
             margin: 0;
         }
 
         .popover-body li {
             padding: 0.25rem 0;
-            cursor: pointer; /* Indicate clickable items */
+            cursor: pointer;
         }
 
         .popover-body li:hover {
-            background-color: #e9ecef; /* Hover effect for list items */
+            background-color: #e9ecef;
         }
 
         .popover-body hr {
             border-top: 1px solid #eee;
             margin: 0.5rem 0;
         }
+
+        /* Styles for the access denied message overlay */
+        .access-denied-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f8d7da;
+            color: #721c24;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            text-align: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .access-denied-message .icon {
+            font-size: 3em;
+            color: #dc3545;
+        }
     </style>
 </head>
 <body>
-    <div aria-hidden='true' aria-labelledby='birthdateModalLabel' class='modal fade' id='birthdateModal' tabindex='-1'>
-        <div class='modal-dialog'>
-            <div class='modal-content'>
-                <div class='modal-header'>
-                    <h5 class='modal-title' id='birthdateModalLabel'>Calculate Your Birth Date</h5>
-                    <button aria-label='Close' class='btn-close' data-bs-dismiss='modal' type='button'></button>
-                </div>
-                <div class='modal-body'>
-                    <div class='mb-3' id='birthdateRow'>
-                        <div class='inline-field'>
-                            <label class='form-label' for='yearsInput'>Years: </label>
-                            <input class='form-control' id='yearsInput' oninput='calculateBirthDate()' placeholder='Enter years' type='number'/>
-                        </div>
-                        <div class='inline-field'>
-                            <label class='form-label' for='monthsInput'>Months: </label>
-                            <input class='form-control' id='monthsInput' oninput='calculateBirthDate()' placeholder='Enter months' type='number'/>
-                        </div>
-                        <div class='inline-field'>
-                            <label class='form-label' for='daysInput'>Days: </label>
-                            <input class='form-control' id='daysInput' oninput='calculateBirthDate()' placeholder='Enter days' type='number'/>
+    <!-- Access Denied Overlay (initially hidden, will be shown by JS if access is denied) -->
+    <div id="accessDeniedOverlay" class="access-denied-message" style="display: none;">
+        <i class="fas fa-times-circle icon"></i>
+        <h1>Access Denied!</h1>
+        <p>You do not have permission to view this page from your current IP address.</p>
+        <p>Your IP: <span id="userIpDisplay">Loading...</span></p>
+    </div>
+
+    <!-- The rest of your existing HTML content (will be hidden if access is denied) -->
+    <div id="mainContent" style="display: none;">
+        <div aria-hidden='true' aria-labelledby='birthdateModalLabel' class='modal fade' id='birthdateModal' tabindex='-1'>
+            <div class='modal-dialog'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h5 class='modal-title' id='birthdateModalLabel'>Calculate Your Birth Date</h5>
+                        <button aria-label='Close' class='btn-close' data-bs-dismiss='modal' type='button'></button>
+                    </div>
+                    <div class='modal-body'>
+                        <div class='mb-3' id='birthdateRow'>
+                            <div class='inline-field'>
+                                <label class='form-label' for='yearsInput'>Years: </label>
+                                <input class='form-control' id='yearsInput' oninput='calculateBirthDate()' placeholder='Enter years' type='number'/>
+                            </div>
+                            <div class='inline-field'>
+                                <label class='form-label' for='monthsInput'>Months: </label>
+                                <input class='form-control' id='monthsInput' oninput='calculateBirthDate()' placeholder='Enter months' type='number'/>
+                            </div>
+                            <div class='inline-field'>
+                                <label class='form-label' for='daysInput'>Days: </label>
+                                <input class='form-control' id='daysInput' oninput='calculateBirthDate()' placeholder='Enter days' type='number'/>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class='modal-footer justify-content-center'>
-                    <h3 class='font-weight-bold' id='birthDateResult'>0</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div aria-hidden='true' aria-labelledby='discountModalLabel' class='modal fade' id='discountModal' role='dialog' tabindex='-1'>
-        <div class='modal-dialog '>
-            <div class='modal-content'>
-                <div class='modal-header'>
-                    <h5 class='modal-title' id='discountModalLabel'>Discount Calculator</h5>
-                    <button aria-label='Close' class='btn-close' data-bs-dismiss='modal' type='button'></button>
-                </div>
-                <div class='modal-body'>
-                    <form name='discountCalculator'>
-                        <div class='form-group'>
-                            <h6>Price</h6>
-                            <input class='form-control' name='price' oninput='calculate()' required='' type='number'/>
-                        </div>
-                        <div class='form-group'>
-                            <h6>Discount %</h6>
-                            <input class='form-control' name='discount' oninput='calculate()' required='' type='number'/>
-                        </div>
-                        <div class='d-flex'>
-                            <div class='form-group' style='padding: 5px;'>
-                                <h6>After Discount</h6>
-                                <input class='form-control' name='afterDiscount' readonly='' type='number'/>
-                            </div>
-                            <div class='form-group' style='padding: 5px;'>
-                                <h6>Discount Amount</h6>
-                                <input class='form-control' name='disamount' readonly='' type='number'/>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <nav class='navbar navbar-expand-lg bg-light sticky-top border-bottom'>
-        <div class='container pl-4 justify-content-center'>
-            <div class='row'>
-                <div class='container'>
-                    <div class='d-flex'>
-                        <ul class='navbar-nav'>
-                            <li class='nav-item'>
-                                <a class='nav-link' data-bs-target='#birthdateModal' data-bs-toggle='modal' href='#'>Birthdate Calculator</a>
-                            </li>
-                            <li class='nav-item'>
-                                <a class='nav-link' data-bs-target='#disInstructionModal' data-bs-toggle='modal' href='#'>Discount Instruction</a>
-                            </li>
-                            <li class='nav-item'>
-                                <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
-                            </li>
-                            <li class='nav-item' id="unavailableTestsNavItem">
-                                <a class='nav-link' href='#' id='unavailableTestsPopoverTrigger'
-                                   data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
-                                   data-bs-title="Unavailable Tests" data-bs-content="Loading...">
-                                    Unavailable Tests
-                                    <span class="badge rounded-pill bg-danger ms-1 visually-hidden" id="unavailableTestsBadge">
-                                        0
-                                        <span class="visually-hidden">unavailable tests</span>
-                                    </span>
-                                </a>
-                            </li>
-                        </ul>
+                    <div class='modal-footer justify-content-center'>
+                        <h3 class='font-weight-bold' id='birthDateResult'>0</h3>
                     </div>
                 </div>
             </div>
         </div>
-    </nav>
 
-    <div class="search-wrapper">
-        <div id="integratedSearchCard" class="integrated-search-card">
-            <div class="search-input-wrapper">
-                <i id="searchIcon" class="fa fa-search"></i>
-                <input type="text" id="testSearch" placeholder="Start typing to search for tests." autocomplete="off"/>
-                <i id="clearSearch" class="fa fa-solid fa-xmark"></i>
-            </div>
-            <div id="suggestions">
+        <div aria-hidden='true' aria-labelledby='discountModalLabel' class='modal fade' id='discountModal' role='dialog' tabindex='-1'>
+            <div class='modal-dialog '>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h5 class='modal-title' id='discountModalLabel'>Discount Calculator</h5>
+                        <button aria-label='Close' class='btn-close' data-bs-dismiss='modal' type='button'></button>
+                    </div>
+                    <div class='modal-body'>
+                        <form name='discountCalculator'>
+                            <div class='form-group'>
+                                <h6>Price</h6>
+                                <input class='form-control' name='price' oninput='calculate()' required='' type='number'/>
+                            </div>
+                            <div class='form-group'>
+                                <h6>Discount %</h6>
+                                <input class='form-control' name='discount' oninput='calculate()' required='' type='number'/>
+                            </div>
+                            <div class='d-flex'>
+                                <div class='form-group' style='padding: 5px;'>
+                                    <h6>After Discount</h6>
+                                    <input class='form-control' name='afterDiscount' readonly='' type='number'/>
+                                </div>
+                                <div class='form-group' style='padding: 5px;'>
+                                    <h6>Discount Amount</h6>
+                                    <input class='form-control' name='disamount' readonly='' type='number'/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            <div id="suggestionsFooter" class="suggestions-footer"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="container" id="singleCardContainer">
-        <!-- This container will hold the test details or the list of unavailable tests -->
-    </div>
+        <nav class='navbar navbar-expand-lg bg-light sticky-top border-bottom'>
+            <div class='container px-4'> <!-- Changed pl-4 to px-4 for consistent padding -->
+                <!-- NEW: Navbar Brand (optional, visible on mobile when collapsed) -->
+                <a class="navbar-brand d-lg-none" href="#">SML Tests</a>
+                <!-- NEW: Navbar Toggler for mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- NEW: Navbar Collapse wrapper for navigation links -->
+                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                    <ul class='navbar-nav'>
+                        <li class='nav-item'>
+                            <a class='nav-link' data-bs-target='#birthdateModal' data-bs-toggle='modal' href='#'>Birthdate Calculator</a>
+                        </li>
+                        <li class='nav-item'>
+                            <a class='nav-link' data-bs-target='#disInstructionModal' data-bs-toggle='modal' href='#'>Discount Instruction</a>
+                        </li>
+                        <li class='nav-item'>
+                            <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
+                        </li>
+                        <li class='nav-item' id="unavailableTestsNavItem">
+                            <a class='nav-link' href='#' id='unavailableTestsPopoverTrigger'
+                               data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
+                               data-bs-title="Unavailable Tests" data-bs-content="Loading...">
+                                Unavailable Tests
+                                <span class="badge rounded-pill bg-danger ms-1 visually-hidden" id="unavailableTestsBadge">
+                                    0
+                                    <span class="visually-hidden">unavailable tests</span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-    <footer class='bg-body-tertiary fixed-bottom text-center border-top'>
-        <div class='container'>
-            © <script>document.write( new Date().getFullYear() );</script> <span>Developed by <a class='text-decoration-none' href='https://www.behance.net/volakurd' style='color: #373A40;' target='_blank'><b>R.V</b></a></span>
+        <div class="search-wrapper">
+            <div id="integratedSearchCard" class="integrated-search-card">
+                <div class="search-input-wrapper">
+                    <i id="searchIcon" class="fa fa-search"></i>
+                    <input type="text" id="testSearch" placeholder="Start typing to search for tests." autocomplete="off"/>
+                    <i id="clearSearch" class="fa fa-solid fa-xmark"></i>
+                </div>
+                <div id="suggestions">
+                    </div>
+                <div id="suggestionsFooter" class="suggestions-footer"></div>
+            </div>
         </div>
-    </footer>
+
+        <div class="container" id="singleCardContainer">
+            <!-- This container will hold the test details or the list of unavailable tests -->
+        </div>
+
+        <footer class='bg-body-tertiary fixed-bottom text-center border-top'>
+            <div class='container'>
+                © <script>document.write( new Date().getFullYear() );</script> <span>Developed by <a class='text-decoration-none' href='https://www.behance.net/volakurd' style='color: #373A40;' target='_blank'><b>R.V</b></a></span>
+            </div>
+        </footer>
+    </div> <!-- End of mainContent div -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- Your existing data fetching and card display logic ---
+        // Sheet URLs
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=0&single=true&output=csv';
         const unavailableTestsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=2088118576&single=true&output=csv';
-
+        // URL for allowed IPs from your Sheet4
+        const allowedIPsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=1397779826&single=true&output=csv';
 
         let allData = [];
-        let testNames = []; // Stores objects: {name, subname, price, tubes, method, classes, fullItem}
-        let unavailableTests = new Set(); // Stores names of unavailable tests
+        let testNames = [];
+        let unavailableTests = new Set();
+        let allowedIPs = new Set();
 
-        // Store the popover instance
         let unavailableTestsPopoverInstance = null;
 
+        // Function to fetch the user's public IP address
+        async function getUserIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+                return null;
+            }
+        }
+
+        // Function to fetch allowed IPs from Sheet4
+        async function fetchAllowedIPs() {
+            try {
+                const response = await fetch(allowedIPsUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvText = await response.text();
+                const rows = csvText.trim().split('\n');
+                // Assuming the first row contains headers and one of them is 'IP adress'
+                const headers = rows[0].split(',').map(h => h.trim());
+                // Changed 'IP Address' to 'IP adress' to match your sheet's column name
+                const ipIndex = headers.indexOf('IP adress');
+
+                if (ipIndex === -1) {
+                    console.warn("'IP adress' column not found in allowed IPs sheet. Cannot restrict by IP.");
+                    return;
+                }
+
+                rows.slice(1).forEach(row => {
+                    const values = row.split(',');
+                    const ip = values[ipIndex] ? values[ipIndex].trim() : '';
+                    if (ip) {
+                        allowedIPs.add(ip);
+                    }
+                });
+                console.log("Allowed IPs Loaded from Sheet4:", Array.from(allowedIPs));
+            } catch (error) {
+                console.error('Error fetching allowed IPs CSV from Sheet4:', error);
+            }
+        }
+
+        // Main function to check access and load content
+        async function checkAccessAndLoadContent() {
+            const overlay = document.getElementById('accessDeniedOverlay');
+            const mainContent = document.getElementById('mainContent');
+            const userIpDisplay = document.getElementById('userIpDisplay');
+
+            // Initially show the overlay and hide main content
+            overlay.style.display = 'flex';
+            mainContent.style.display = 'none';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling while checking
+
+            await fetchAllowedIPs(); // Fetch allowed IPs first
+
+            const userIP = await getUserIP();
+            userIpDisplay.textContent = userIP || "Unknown"; // Display user's IP on the overlay
+
+            if (userIP && allowedIPs.has(userIP)) {
+                console.log("Access Granted for IP:", userIP);
+                overlay.style.display = 'none'; // Hide overlay
+                mainContent.style.display = 'block'; // Show main content
+                document.body.style.overflow = ''; // Allow scrolling
+                // Proceed with loading actual website content
+                loadWebsiteContent();
+            } else {
+                console.warn("Access Denied for IP:", userIP || "Unknown IP");
+                // The overlay is already visible, main content remains hidden
+            }
+        }
+
+        // Existing function to load website content (now called after IP check)
+        async function loadWebsiteContent() {
+             Promise.all([
+                fetch(sheetUrl).then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.text();
+                }),
+                fetchUnavailableTests()
+            ])
+            .then(([csvText]) => {
+                allData = parseCSV(csvText);
+                testNames = allData.map(item => ({
+                    name: item['name'] || '',
+                    subname: item['subname'] || '',
+                    price: item['price'] || '',
+                    tubes: item['tubes'] || '',
+                    method: item['method'] || '',
+                    classes: item['classes'] || '',
+                    fullItem: item
+                })).filter(item => item.name);
+
+                if (testNames.length > 0) {
+                    displayDefaultSuggestions();
+                }
+                populateUnavailableTestsPopover();
+            })
+            .catch(error => {
+                document.getElementById('singleCardContainer').innerHTML = '<div class="text-danger">Error loading data. Please try again later.</div>';
+                console.error('Error fetching CSV:', error);
+            });
+        }
+
+
+        // --- Your existing data fetching and card display logic (mostly unchanged) ---
         function getRandomTestNames(count) {
             if (testNames.length === 0) return [];
             const shuffled = [...testNames].sort(() => 0.5 - Math.random());
             return shuffled.slice(0, count);
         }
 
-        // Function to fetch unavailable tests from sheet3
         async function fetchUnavailableTests() {
             try {
                 const response = await fetch(unavailableTestsUrl);
@@ -463,8 +593,8 @@
                 const csvText = await response.text();
                 const rows = csvText.trim().split('\n');
                 const headers = rows[0].split(',').map(h => h.trim());
-                const nameIndex = headers.indexOf('Test Name'); // Looking for 'Test Name' column
-                const statusIndex = headers.indexOf('Status'); // Looking for 'Status' column
+                const nameIndex = headers.indexOf('Test Name');
+                const statusIndex = headers.indexOf('Status');
 
                 if (nameIndex === -1 || statusIndex === -1) {
                     console.warn("'Test Name' or 'Status' column not found in unavailable tests sheet. Cannot determine unavailable tests.");
@@ -486,37 +616,6 @@
             }
         }
 
-        // Fetch both main data and unavailable tests concurrently
-        Promise.all([
-            fetch(sheetUrl).then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.text();
-            }),
-            fetchUnavailableTests() // This call initiates fetching from Sheet3
-        ])
-        .then(([csvText]) => {
-            allData = parseCSV(csvText);
-            testNames = allData.map(item => ({
-                name: item['name'] || '',
-                subname: item['subname'] || '',
-                price: item['price'] || '',
-                tubes: item['tubes'] || '',
-                method: item['method'] || '',
-                classes: item['classes'] || '',
-                fullItem: item // Keep reference to original full data for showCard
-            })).filter(item => item.name); // Only include items with a name
-
-            // After all data is loaded, display default suggestions
-            if (testNames.length > 0) {
-                displayDefaultSuggestions();
-            }
-            populateUnavailableTestsPopover(); // Call this to populate the popover after data is ready
-        })
-        .catch(error => {
-            document.getElementById('singleCardContainer').innerHTML = '<div class="text-danger">Error loading data. Please try again later.</div>';
-            console.error('Error fetching CSV:', error);
-        });
-
         function parseCSV(text) {
             const rows = text.trim().split('\n');
             const headers = rows[0].split(',').map(h => h.trim());
@@ -531,113 +630,109 @@
             return data;
         }
 
-    function showCard(item) {
-        // Check if the item is unavailable
-        const isUnavailable = unavailableTests.has(item['name']);
+        function showCard(item) {
+            const isUnavailable = unavailableTests.has(item['name']);
 
-        // Format price with commas
-        const priceFormatted = item['price']
-            ? item['price'].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' IQD'
-            : '';
+            const priceFormatted = item['price']
+                ? item['price'].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' IQD'
+                : '';
 
-        // Check if link exists
-        const hasLink = item['link'] && item['link'].trim() !== '';
+            const hasLink = item['link'] && item['link'].trim() !== '';
 
-        // Determine if finishtime is "نەماوە" for conditional styling
-        const isFinishtimeNemawa = item['finishtime'] && item['finishtime'].trim() === 'نەماوە';
-        const finishtimeClass = isFinishtimeNemawa ? 'bg-danger text-white p-2 rounded' : ''; // Added p-2 and rounded for better appearance
+            const isFinishtimeNemawa = item['finishtime'] && item['finishtime'].trim() === 'نەماوە';
+            const finishtimeClass = isFinishtimeNemawa ? 'bg-danger text-white p-2 rounded' : '';
 
 
-        const container = document.getElementById('singleCardContainer');
-        container.innerHTML = `
-           <div class="card">
-<div class="card-header "> <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h5 class="mb-0 d-inline"><strong>${item['name'] || 'No Name'}</strong></h5>
-            ${isUnavailable ? '<span class="badge bg-danger ms-2">Not Available</span>' : ''} <!-- Unavailable Badge -->
+            const container = document.getElementById('singleCardContainer');
+            container.innerHTML = `
+               <div class="card">
+    <div class="card-header "> <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0 d-inline"><strong>${item['name'] || 'No Name'}</strong></h5>
+                ${isUnavailable ? '<span class="badge bg-danger ms-2">Not Available</span>' : ''}
+            </div>
+            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                <button type="button" class="btn btn-outline-secondary" id="aboutBtn">About</button>
+                <button type="button" class="btn btn-outline-secondary" id="prepBtn">Preparation</button>
+            </div>
         </div>
-        <div class="btn-group" role="group" aria-label="Basic outlined example">
-            <button type="button" class="btn btn-outline-secondary" id="aboutBtn">About</button>
-            <button type="button" class="btn btn-outline-secondary" id="prepBtn">Preparation</button>
+        ${item['subname'] ? `<small class="d-block text-muted fst-italic mt-1">${item['subname']}</small>` : ''}
+    </div>
+    <div class="card-body">
+        ${isUnavailable ? '<div class="alert alert-danger text-center" role="alert">This test is currently unavailable.</div>' : ''}
+        <div class="row mb-3 text-center d-flex align-items-center justify-content-center">
+            <div class="col">
+                <h6 class="mb-1">Price</h6>
+                <p class="mb-0">${priceFormatted}</p>
+            </div>
+            <div class="col">
+                <h6 class="mb-1">Tubes</h6>
+                <div id="tubes-badges" class="d-flex flex-wrap"></div>
+            </div>
+            <div class="col">
+                <h6 class="mb-1">Method</h6>
+                <span class="badge rounded-pill bg-warning text-dark">${item['method'] || ''}</span>
+            </div>
+            <div class="col">
+                <h6 class="mb-1">Classes</h6>
+                <span class="badge rounded-pill bg-success ">${item['classes'] || ''}</span>
+            </div>
+            <div class="col">
+                <h6 class="mb-1">Link</h6>
+                ${hasLink ? `<a href="${item['link']}" target="_blank" class="badge rounded-pill bg-primary text-white text-decoration-none">Labels</a>` : ''}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col text-center">
+               <h6 class="mb-1">Time Finishing</h6>
+               <p class="mb-0 ${finishtimeClass}" dir="rtl">${item['finishtime'] ? item['finishtime'].replace(/\./g, '<br/>') : ''}</p>
+            </div>
+        </div>
+        <div id="about" style="display: none;" dir="rtl">
+        <hr></hr>
+            <h6>دەربارەى پشکنینەکە</h6>
+            <p style="text-align: justify;">${item['about'] ? item['about'].replace(/\./g, '. <br/>') : ''}</p>
+        </div>
+        <div id="prep" style="display: none;" dir="rtl">
+        <hr></hr>
+            <h6>ئامادەکارى بۆ پشکنینەکە</h6>
+            <p style="text-align: justify;">${item['prep'] ? item['prep'].replace(/\./g, '. <br/>') : ''}</p>
         </div>
     </div>
-    ${item['subname'] ? `<small class="d-block text-muted fst-italic mt-1">${item['subname']}</small>` : ''}
-</div>
-<div class="card-body">
-    ${isUnavailable ? '<div class="alert alert-danger text-center" role="alert">This test is currently unavailable.</div>' : ''} <!-- Unavailable Notification -->
-    <div class="row mb-3 text-center d-flex align-items-center justify-content-center">
-        <div class="col">
-            <h6 class="mb-1">Price</h6>
-            <p class="mb-0">${priceFormatted}</p>
-        </div>
-        <div class="col">
-            <h6 class="mb-1">Tubes</h6>
-            <div id="tubes-badges" class="d-flex flex-wrap"></div>
-        </div>
-        <div class="col">
-            <h6 class="mb-1">Method</h6>
-            <span class="badge rounded-pill bg-warning text-dark">${item['method'] || ''}</span>
-        </div>
-        <div class="col">
-            <h6 class="mb-1">Classes</h6>
-            <span class="badge rounded-pill bg-success ">${item['classes'] || ''}</span>
-        </div>
-        <div class="col">
-            <h6 class="mb-1">Link</h6>
-            ${hasLink ? `<a href="${item['link']}" target="_blank" class="badge rounded-pill bg-primary text-white text-decoration-none">Labels</a>` : ''}
-        </div>
+    <div class="card-footer d-flex justify-content-between">
+        <small >${item['author'] || ''} | ${item['publishDate'] || ''}</small>
+        <small>Update date :${item['updateDate'] || ''}</small>
     </div>
-    <div class="row mb-3">
-        <div class="col text-center">
-           <h6 class="mb-1">Time Finishing</h6>
-           <p class="mb-0 ${finishtimeClass}" dir="rtl">${item['finishtime'] ? item['finishtime'].replace(/\./g, '<br/>') : ''}</p>
-        </div>
     </div>
-    <div id="about" style="display: none;" dir="rtl">
-    <hr></hr>
-        <h6>دەربارەى پشکنینەکە</h6>
-        <p style="text-align: justify;">${item['about'] ? item['about'].replace(/\./g, '. <br/>') : ''}</p>
-    </div>
-    <div id="prep" style="display: none;" dir="rtl">
-    <hr></hr>
-        <h6>ئامادەکارى بۆ پشکنینەکە</h6>
-        <p style="text-align: justify;">${item['prep'] ? item['prep'].replace(/\./g, '. <br/>') : ''}</p>
-    </div>
-</div>
-<div class="card-footer d-flex justify-content-between">
-    <small >${item['author'] || ''} | ${item['publishDate'] || ''}</small>
-    <small>Update date :${item['updateDate'] || ''}</small>
-</div>
-</div>
-        `;
+            `;
 
-        setTimeout(() => {
-            const aboutDiv = container.querySelector('#about');
-            const prepDiv = container.querySelector('#prep');
-            const aboutBtn = container.querySelector('#aboutBtn');
-            const prepBtn = container.querySelector('#prepBtn');
+            setTimeout(() => {
+                const aboutDiv = container.querySelector('#about');
+                const prepDiv = container.querySelector('#prep');
+                const aboutBtn = container.querySelector('#aboutBtn');
+                const prepBtn = container.querySelector('#prepBtn');
 
-            const toggleSection = (targetDiv, button) => {
-                if (targetDiv.style.display === 'block') {
-                    targetDiv.style.display = 'none';
-                    button.classList.remove('active');
-                } else {
-                    aboutDiv.style.display = 'none';
-                    prepDiv.style.display = 'none';
-                    aboutBtn.classList.remove('active');
-                    prepBtn.classList.remove('active');
+                const toggleSection = (targetDiv, button) => {
+                    if (targetDiv.style.display === 'block') {
+                        targetDiv.style.display = 'none';
+                        button.classList.remove('active');
+                    } else {
+                        aboutDiv.style.display = 'none';
+                        prepDiv.style.display = 'none';
+                        aboutBtn.classList.remove('active');
+                        prepBtn.classList.remove('active');
 
-                    targetDiv.style.display = 'block';
-                    button.classList.add('active');
-                }
-            };
+                        targetDiv.style.display = 'block';
+                        button.classList.add('active');
+                    }
+                };
 
-            aboutBtn.onclick = () => toggleSection(aboutDiv, aboutBtn);
-            prepBtn.onclick = () => toggleSection(prepDiv, prepBtn);
-        }, 0);
+                aboutBtn.onclick = () => toggleSection(aboutDiv, aboutBtn);
+                prepBtn.onclick = () => toggleSection(prepDiv, prepBtn);
+            }, 0);
 
-        generateTubeBadges(item['tubes']);
-    }
+            generateTubeBadges(item['tubes']);
+        }
         function generateTubeBadges(tubesStr) {
             const container = document.querySelector('#singleCardContainer #tubes-badges');
             if (!container) return;
@@ -670,34 +765,31 @@
 
         // --- JavaScript for the new integrated search design ---
         const searchInput = document.getElementById('testSearch');
-        const integratedSearchCard = document.getElementById('integratedSearchCard'); // Reference to the new parent div
+        const integratedSearchCard = document.getElementById('integratedSearchCard');
         const suggestionsBox = document.getElementById('suggestions');
         const clearBtn = document.getElementById('clearSearch');
         const singleCardContainer = document.getElementById('singleCardContainer');
-        const suggestionsFooter = document.getElementById('suggestionsFooter'); // Reference to the new footer div
+        const suggestionsFooter = document.getElementById('suggestionsFooter');
 
         let debounceTimeout;
 
-        // Function to expand the integrated search card
         function expandIntegratedCard() {
             if (!integratedSearchCard.classList.contains('expanded')) {
                 integratedSearchCard.classList.add('expanded');
             }
         }
 
-        // Function to collapse the integrated search card
         function collapseIntegratedCard() {
             if (integratedSearchCard.classList.contains('expanded')) {
                 integratedSearchCard.classList.remove('expanded');
-                suggestionsBox.innerHTML = ''; // Clear suggestions
+                suggestionsBox.innerHTML = '';
                 if (suggestionsFooter) {
-                    suggestionsFooter.style.display = 'none'; // Hide the footer
+                    suggestionsFooter.style.display = 'none';
                 }
             }
-            clearBtn.classList.remove('visible'); // Hide clear button on collapse
+            clearBtn.classList.remove('visible');
         }
 
-        // Function to toggle clear button visibility
         function toggleClearButtonVisibility() {
             if (searchInput.value.length > 0 || searchInput === document.activeElement) {
                 clearBtn.classList.add('visible');
@@ -709,10 +801,10 @@
 
         clearBtn.addEventListener('click', () => {
             searchInput.value = '';
-            collapseIntegratedCard(); // Use the new collapse function
-            singleCardContainer.innerHTML = ''; // Clear the displayed test card
+            collapseIntegratedCard();
+            singleCardContainer.innerHTML = '';
             searchInput.focus();
-            toggleClearButtonVisibility(); // Update visibility after clearing
+            toggleClearButtonVisibility();
         });
 
         searchInput.addEventListener('focus', () => {
@@ -723,11 +815,10 @@
                 const filtered = testNames.filter(item => item.name.toLowerCase().includes(q));
                 showFilteredSuggestions(filtered);
             }
-            toggleClearButtonVisibility(); // Show clear button on focus
+            toggleClearButtonVisibility();
         });
 
         searchInput.addEventListener('blur', () => {
-            // Delay hiding the clear button slightly to allow click event on it
             setTimeout(() => {
                 toggleClearButtonVisibility();
                 if (searchInput.value === '' && !integratedSearchCard.contains(document.activeElement)) {
@@ -748,11 +839,10 @@
                 } else {
                     displayDefaultSuggestions();
                 }
-                toggleClearButtonVisibility(); // Update visibility on input
+                toggleClearButtonVisibility();
             }, 300);
         });
 
-        // Your existing badge creation function (unchanged)
         function createBadge(text, colorClass = 'bg-secondary') {
             if (!text) return null;
             const badge = document.createElement('span');
@@ -761,7 +851,6 @@
             return badge;
         }
 
-        // Your existing suggestion item creation function (unchanged)
         function createSuggestionItem(item, iconClass = null) {
             const btn = document.createElement('span');
             btn.type = 'span';
@@ -832,15 +921,14 @@
                 btn.appendChild(row2);
             }
 
-            // Only set onclick if the item is NOT unavailable
             if (!isUnavailable) {
                 btn.onclick = () => {
                     searchInput.value = item.name;
-                    collapseIntegratedCard(); // Collapse the integrated card after selection
-                    showCard(item.fullItem); // Display the full test card
+                    collapseIntegratedCard();
+                    showCard(item.fullItem);
                 };
             } else {
-                 btn.onclick = (e) => { // Prevent selection for unavailable items
+                 btn.onclick = (e) => {
                     e.stopPropagation();
                     e.preventDefault();
                 };
@@ -848,11 +936,10 @@
             return btn;
         }
 
-        // Updated function to update the content and visibility of the pre-existing footer
         function updateSuggestionsFooter(totalCount) {
             if (suggestionsFooter) {
                 suggestionsFooter.textContent = `Total tests available: ${totalCount}`;
-                suggestionsFooter.style.display = 'block'; // Make it visible
+                suggestionsFooter.style.display = 'block';
             }
         }
 
@@ -867,9 +954,8 @@
                     suggestionsBox.appendChild(createSuggestionItem(item));
                 });
             }
-            // Update the footer content and make it visible
             updateSuggestionsFooter(testNames.length);
-            expandIntegratedCard(); // Expand the card to show filtered suggestions
+            expandIntegratedCard();
         }
 
         function displayDefaultSuggestions() {
@@ -882,12 +968,10 @@
             } else {
                 suggestionsBox.innerHTML = '<span class="suggestion-item text-muted disabled">Loading... If tests don\'t show, try clicking the search box again.</span>';
             }
-            // Update the footer content and make it visible
             updateSuggestionsFooter(testNames.length);
-            expandIntegratedCard(); // Expand the card to show default suggestions
+            expandIntegratedCard();
         }
 
-        // Function to populate the popover content with unavailable test names
         function populateUnavailableTestsPopover() {
             const unavailableTestsBadge = document.getElementById('unavailableTestsBadge');
             const popoverTrigger = document.getElementById('unavailableTestsPopoverTrigger');
@@ -896,25 +980,22 @@
 
             if (unavailableTests.size === 0) {
                 popoverContentHtml = '<p class="text-muted mb-0">No unavailable tests.</p>';
-                unavailableTestsBadge.classList.add('visually-hidden'); // Hide the badge
+                unavailableTestsBadge.classList.add('visually-hidden');
                 unavailableTestsBadge.textContent = '0';
             } else {
-                // Show and update the badge
                 unavailableTestsBadge.classList.remove('visually-hidden');
                 unavailableTestsBadge.textContent = unavailableTests.size.toString();
 
-                // Convert Set to Array and sort for consistent order
                 const sortedUnavailableTests = Array.from(unavailableTests).sort((a, b) => a.localeCompare(b));
 
                 let listItemsHtml = sortedUnavailableTests.map((testName, index, array) => {
-                    // Find the full item data for the unavailable test from allData (main sheet)
                     const fullTestItem = allData.find(item => item.name === testName);
-                    const isClickableClass = fullTestItem ? '' : 'text-muted'; // Grey out if no full data
-                    const pointerEventsStyle = fullTestItem ? '' : 'pointer-events: none;'; // Make unclickable
+                    const isClickableClass = fullTestItem ? '' : 'text-muted';
+                    const pointerEventsStyle = fullTestItem ? '' : 'pointer-events: none;';
 
                     let itemHtml = `<li style="cursor: pointer; ${pointerEventsStyle}" data-test-name="${testName}" class="popover-list-item ${isClickableClass}">${testName}</li>`;
                     if (index < array.length - 1) {
-                        itemHtml += '<hr>'; // Simple hr for separator
+                        itemHtml += '<hr>';
                     }
                     return itemHtml;
                 }).join('');
@@ -922,28 +1003,23 @@
                 popoverContentHtml = `<ul>${listItemsHtml}</ul>`;
             }
 
-            // Update the popover's content
             if (popoverTrigger) {
                 popoverTrigger.setAttribute('data-bs-content', popoverContentHtml);
 
-                // If popover instance exists, update it. Otherwise, it will be initialized on DOMContentLoaded.
                 if (unavailableTestsPopoverInstance) {
                     unavailableTestsPopoverInstance.setContent({
                         '.popover-body': popoverContentHtml
                     });
-                    // Re-attach click listeners for dynamically added popover list items
                     attachPopoverItemClickListeners();
                 }
             }
         }
 
         function attachPopoverItemClickListeners() {
-            const popoverBody = document.querySelector('.popover-body'); // Popover body element
+            const popoverBody = document.querySelector('.popover-body');
             if (popoverBody) {
                 popoverBody.querySelectorAll('.popover-list-item').forEach(itemElement => {
-                    // Remove existing listeners to prevent duplicates
                     itemElement.removeEventListener('click', handlePopoverItemClick);
-                    // Add new listener
                     itemElement.addEventListener('click', handlePopoverItemClick);
                 });
             }
@@ -955,7 +1031,6 @@
                 const fullTestItem = allData.find(item => item.name === testName);
                 if (fullTestItem) {
                     showCard(fullTestItem);
-                    // Hide the popover after clicking an item
                     if (unavailableTestsPopoverInstance) {
                         unavailableTestsPopoverInstance.hide();
                     }
@@ -964,27 +1039,26 @@
         }
 
 
-        // Handle clicks outside the integrated search card to collapse it
         document.addEventListener('click', e => {
             if (!integratedSearchCard.contains(e.target)) {
                 collapseIntegratedCard();
             }
         });
 
-        // Initial check for clear button visibility on page load
         toggleClearButtonVisibility();
 
-        // Initialize popover and attach hover listeners
+        // Call checkAccessAndLoadContent on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
+            checkAccessAndLoadContent(); // This initiates the IP check and then loads content if allowed
+
             const popoverTrigger = document.getElementById('unavailableTestsPopoverTrigger');
             if (popoverTrigger) {
                 unavailableTestsPopoverInstance = new bootstrap.Popover(popoverTrigger, {
-                    trigger: 'hover', // Activate on hover
-                    delay: { "show": 100, "hide": 200 }, // Small delay for better UX
-                    html: true // Allow HTML content in the popover
+                    trigger: 'hover',
+                    delay: { "show": 100, "hide": 200 },
+                    html: true
                 });
 
-                // Re-attach click listeners for popover items when popover is shown
                 popoverTrigger.addEventListener('shown.bs.popover', attachPopoverItemClickListeners);
             }
         });
