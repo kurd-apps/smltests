@@ -243,8 +243,7 @@
         }
 
 
-        /* Removed custom media query for navbar-nav as Bootstrap handles it */
-        /* @media (max-width: 992px) {
+        @media (max-width: 992px) {
             .navbar-nav {
                 flex-direction: row !important;
             }
@@ -257,7 +256,7 @@
                 margin-right: 15px;
                 margin-bottom: 5px;
             }
-        } */
+        }
 
         #unavailableTestsBadge {
             font-size: 0.8em;
@@ -397,37 +396,34 @@
         </div>
 
         <nav class='navbar navbar-expand-lg bg-light sticky-top border-bottom'>
-            <div class='container px-4'> <!-- Changed pl-4 to px-4 for consistent padding -->
-                <!-- NEW: Navbar Brand (optional, visible on mobile when collapsed) -->
-                <a class="navbar-brand d-lg-none" href="#">SML Tests</a>
-                <!-- NEW: Navbar Toggler for mobile -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <!-- NEW: Navbar Collapse wrapper for navigation links -->
-                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-                    <ul class='navbar-nav'>
-                        <li class='nav-item'>
-                            <a class='nav-link' data-bs-target='#birthdateModal' data-bs-toggle='modal' href='#'>Birthdate Calculator</a>
-                        </li>
-                        <li class='nav-item'>
-                            <a class='nav-link' data-bs-target='#disInstructionModal' data-bs-toggle='modal' href='#'>Discount Instruction</a>
-                        </li>
-                        <li class='nav-item'>
-                            <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
-                        </li>
-                        <li class='nav-item' id="unavailableTestsNavItem">
-                            <a class='nav-link' href='#' id='unavailableTestsPopoverTrigger'
-                               data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
-                               data-bs-title="Unavailable Tests" data-bs-content="Loading...">
-                                Unavailable Tests
-                                <span class="badge rounded-pill bg-danger ms-1 visually-hidden" id="unavailableTestsBadge">
-                                    0
-                                    <span class="visually-hidden">unavailable tests</span>
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
+            <div class='container pl-4 justify-content-center'>
+                <div class='row'>
+                    <div class='container'>
+                        <div class='d-flex'>
+                            <ul class='navbar-nav'>
+                                <li class='nav-item'>
+                                    <a class='nav-link' data-bs-target='#birthdateModal' data-bs-toggle='modal' href='#'>Birthdate Calculator</a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link' data-bs-target='#disInstructionModal' data-bs-toggle='modal' href='#'>Discount Instruction</a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
+                                </li>
+                                <li class='nav-item' id="unavailableTestsNavItem">
+                                    <a class='nav-link' href='#' id='unavailableTestsPopoverTrigger'
+                                       data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
+                                       data-bs-title="Unavailable Tests" data-bs-content="Loading...">
+                                        Unavailable Tests
+                                        <span class="badge rounded-pill bg-danger ms-1 visually-hidden" id="unavailableTestsBadge">
+                                            0
+                                            <span class="visually-hidden">unavailable tests</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -494,7 +490,7 @@
                 const rows = csvText.trim().split('\n');
                 // Assuming the first row contains headers and one of them is 'IP adress'
                 const headers = rows[0].split(',').map(h => h.trim());
-                // Changed 'IP Address' to 'IP adress' to match your sheet's column name
+                // UPDATED: Changed 'IP Address' to 'IP adress' to match your sheet's column name
                 const ipIndex = headers.indexOf('IP adress');
 
                 if (ipIndex === -1) {
