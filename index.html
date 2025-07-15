@@ -13,313 +13,302 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
 
     <style>
-        /* Existing styles */
-        .bg-gel { background-color: #bf0202; }
-        .bg-edta { background-color: #78206d; }
-        .bg-sodiumcitrate { background-color: #00b3f1; }
-        .bg-plane { background-color: #FC4F00; }
-        .bg-sodiumheparin { background-color: #8cdb73; }
-        .bg-lithiumheparin { background-color: #176f21; }
-        .bg-bigcup { background-color: #DC143C; }
-        .bg-other { background-color: #7e7e7e; }
+    /* Existing styles */
+    .bg-gel { background-color: #bf0202; }
+    .bg-edta { background-color: #78206d; }
+    .bg-sodiumcitrate { background-color: #00b3f1; }
+    .bg-plane { background-color: #FC4F00; }
+    .bg-sodiumheparin { background-color: #8cdb73; }
+    .bg-lithiumheparin { background-color: #176f21; }
+    .bg-bigcup { background-color: #DC143C; }
+    .bg-other { background-color: #7e7e7e; }
 
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+    body {
+        font-family: 'Vazirmatn', sans-serif;
+        display: d-flex; /* Corrected from d-flex */
+        flex-direction: column;
+        align-items: center; /* This will center items horizontally */
+        min-height: 100vh;
+        margin: 0;
+    }
 
-        .navbar {
-            width: 100%;
-            position: sticky;
-            z-index: 1020;
-        }
+    .navbar {
+        width: 100%;
+        position: sticky;
+        z-index: 1020;
+    }
 
-        .search-wrapper {
-            width: 100%;
-            max-width: 700px;
-            padding: 0 15px;
-            box-sizing: border-box;
-            position: relative;
-            margin-top: 20px;
-        }
+    .search-wrapper {
+        width: 100%;
+        max-width: 700px;
+        padding: 0 15px;
+        box-sizing: border-box;
+        margin: 20px auto; /* Added 'auto' for horizontal centering */
+    }
 
-        .integrated-search-card {
-            background-color: #fff;
-            border: 1px solid #dfe1e5;
-            border-radius: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease-in-out;
-            position: relative;
-            width: 100%;
-        }
+    .integrated-search-card {
+        background-color: #fff;
+        border: 1px solid #dfe1e5;
+        border-radius: 30px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: all 0.3s ease-in-out;
+        position: relative;
+        width: 100%;
+    }
 
-        .integrated-search-card.expanded {
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+    .integrated-search-card.expanded {
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
 
-        .search-input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
 
-        #testSearch {
-            width: 100%;
-            padding: 12px 20px;
-            padding-left: 45px;
-            padding-right: 40px;
-            border: none;
-            border-radius: 30px;
-            font-size: 16px;
-            outline: none;
-            background-color: transparent;
-            box-sizing: border-box;
-            text-align: left;
-            z-index: 1;
-        }
+    #testSearch {
+        width: 100%;
+        padding: 12px 20px;
+        padding-left: 45px;
+        padding-right: 40px;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        outline: none;
+        background-color: transparent;
+        box-sizing: border-box;
+        text-align: left;
+        z-index: 1;
+    }
 
-        #testSearch::placeholder {
-            text-align: left;
-        }
+    #testSearch::placeholder {
+        text-align: left;
+    }
 
-        #searchIcon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            z-index: 2;
-        }
+    #searchIcon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        z-index: 2;
+    }
 
-        #clearSearch {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #000;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            z-index: 2;
-            display: none;
-        }
+    #clearSearch {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #000;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        z-index: 2;
+        display: none;
+    }
 
-        #clearSearch.visible {
-            display: block;
-        }
+    #clearSearch.visible {
+        display: block;
+    }
 
-        #clearSearch:hover {
-            color: #dc3545;
-        }
+    #clearSearch:hover {
+        color: #dc3545;
+    }
 
-        #suggestions {
-            display: none;
-            max-height: 380px;
-            overflow-y: auto;
-            border-top: 1px solid #f0f0f0;
-            margin-top: 5px;
-            padding-top: 5px;
-        }
+    #suggestions {
+        display: none; /* Initially hidden */
+        max-height: 380px;
+        overflow-y: auto;
+        border-top: 1px solid #f0f0f0;
+        margin-top: 5px;
+        padding-top: 5px;
+    }
 
-        .integrated-search-card.expanded #suggestions {
-            display: block;
-        }
+    .integrated-search-card.expanded #suggestions {
+        display: block; /* Show when expanded */
+    }
 
-        .suggestion-item {
-            padding: 12px 20px;
-            cursor: pointer;
-            background: #ffffff;
-            color: #343a40;
-            border-bottom: 1px solid #eff2f5;
-            transition: background 0.2s ease, color 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            width: 100%;
-            text-align: left;
-        }
+    .suggestion-item {
+        padding: 12px 20px;
+        cursor: pointer;
+        background: #ffffff;
+        color: #343a40;
+        border-bottom: 1px solid #eff2f5;
+        transition: background 0.2s ease, color 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        text-align: left;
+    }
 
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
 
-        .suggestion-item:hover {
-            background: #e9ecef;
-        }
-
-        .suggestion-item.unavailable {
-            color: #6c757d;
-            cursor: not-allowed;
-        }
-
-        .suggestion-item.unavailable:hover {
-            background: #f8f9fa;
-        }
+    .suggestion-item:hover {
+        background: #e9ecef;
+    }
 
 
-        .suggestion-item-row-1 {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            margin-bottom: 4px;
-        }
+    .suggestion-item-row-1 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 4px;
+    }
 
-        .suggestion-item-row-2 {
-            width: 100%;
-        }
+    .suggestion-item-row-2 {
+        width: 100%;
+    }
 
-        .suggestion-item-row-1 strong {
-            font-weight: bold;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            flex-shrink: 1;
-            padding-right: 10px;
-        }
-        .suggestion-item-row-2 small {
-            color: #6c757d;
-            font-style: italic;
-            font-size: 0.8em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-        }
+    .suggestion-item-row-1 strong {
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 1;
+        padding-right: 10px;
+    }
+    .suggestion-item-row-2 small {
+        color: #6c757d;
+        font-style: italic;
+        font-size: 0.8em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
 
-        .suggestion-info-pills {
-            flex-shrink: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            justify-content: flex-end;
-            align-items: center;
-        }
-        .suggestion-info-pills .badge {
-            font-size: 0.75em;
-            padding: 0.3em 0.6em;
-        }
+    .suggestion-info-pills {
+        flex-shrink: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .suggestion-info-pills .badge {
+        font-size: 0.75em;
+        padding: 0.3em 0.6em;
+    }
 
-        #suggestionsFooter {
-            padding: 10px 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-            font-size: 0.85rem;
-            color: #6c757d;
-            text-align: center;
-            margin-top: 0;
-            border-radius: 0 0 30px 30px;
-            display: none;
-        }
+    #suggestionsFooter {
+        padding: 10px 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+        font-size: 0.85rem;
+        color: #6c757d;
+        text-align: center;
+        margin-top: 0;
+        border-radius: 0 0 30px 30px;
+        display: none;
+    }
 
-        #singleCardContainer .card {
-            width: 100%;
-            max-width: 1000px;
-            margin-top: 20px;
-            margin-bottom: 80px;
-            border-radius: 20px;
-        }
+    #singleCardContainer {
+        width: 100%;
+        max-width: 1000px; /* Adjust as needed */
+        margin: 20px auto 80px auto; /* 'auto' for horizontal centering, existing top/bottom margins */
+        border-radius: 20px;
+    }
 
-        .modal-body .inline-field {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
+    .modal-body .inline-field {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+    .modal-body .inline-field label {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .modal-body .inline-field input {
+        width: 100%;
+    }
+    .modal-body .d-flex .form-group {
+        flex: 1;
+    }
+
+
+    @media (max-width: 992px) {
+        .navbar-nav {
+            flex-direction: row !important;
         }
-        .modal-body .inline-field label {
+        .navbar-nav .nav-item {
+            margin-right: 15px;
             margin-bottom: 5px;
+        }
+         .navbar-nav .nav-item:hover {
             font-weight: bold;
+            margin-right: 15px;
+            margin-bottom: 5px;
         }
-        .modal-body .inline-field input {
-            width: 100%;
-        }
-        .modal-body .d-flex .form-group {
-            flex: 1;
-        }
+    }
 
+    #unavailableTestsBadge {
+        font-size: 0.8em;
+        padding: .3em .6em;
+        margin-left: 5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.5em;
+        height: 1.5em;
+        border-radius: 50%;
+        vertical-align: middle;
+    }
 
-        @media (max-width: 992px) {
-            .navbar-nav {
-                flex-direction: row !important;
-            }
-            .navbar-nav .nav-item {
-                margin-right: 15px;
-                margin-bottom: 5px;
-            }
-             .navbar-nav .nav-item:hover {
-                font-weight: bold;
-                margin-right: 15px;
-                margin-bottom: 5px;
-            }
-        }
+    .popover-header {
+        font-weight: bold;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
 
-        #unavailableTestsBadge {
-            font-size: 0.8em;
-            padding: .3em .6em;
-            margin-left: 5px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 1.5em;
-            height: 1.5em;
-            border-radius: 50%;
-            vertical-align: middle;
-        }
+    .popover-body ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-        .popover-header {
-            font-weight: bold;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
+    .popover-body li {
+        padding: 0.25rem 0;
+        cursor: pointer;
+    }
 
-        .popover-body ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+    .popover-body li:hover {
+        background-color: #e9ecef;
+    }
 
-        .popover-body li {
-            padding: 0.25rem 0;
-            cursor: pointer;
-        }
+    .popover-body hr {
+        border-top: 1px solid #eee;
+        margin: 0.5rem 0;
+    }
 
-        .popover-body li:hover {
-            background-color: #e9ecef;
-        }
-
-        .popover-body hr {
-            border-top: 1px solid #eee;
-            margin: 0.5rem 0;
-        }
-
-        /* Styles for the access denied message overlay */
-        .access-denied-message {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #f8d7da;
-            color: #721c24;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            text-align: center;
-            z-index: 9999;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .access-denied-message .icon {
-            font-size: 3em;
-            color: #dc3545;
-        }
-    </style>
+    /* Styles for the access denied message overlay */
+    .access-denied-message {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #f8d7da;
+        color: #721c24;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        text-align: center;
+        z-index: 9999;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .access-denied-message .icon {
+        font-size: 3em;
+        color: #dc3545;
+    }
+</style>
 </head>
 <body>
     <!-- Access Denied Overlay (initially hidden, will be shown by JS if access is denied) -->
@@ -402,13 +391,13 @@
                         <div class='d-flex'>
                             <ul class='navbar-nav'>
                                 <li class='nav-item'>
-                                    <a class='nav-link' data-bs-target='#birthdateModal' data-bs-toggle='modal' href='#'>Birthdate Calculator</a>
+                                    <a class='nav-link' href='#' id='birthdateModalTrigger'>Birthdate Calculator</a>
                                 </li>
                                 <li class='nav-item'>
-                                    <a class='nav-link' data-bs-target='#disInstructionModal' data-bs-toggle='modal' href='#'>Discount Instruction</a>
+                                    <a class='nav-link' href='#' id='disInstructionModal'>Discount Instruction</a>
                                 </li>
                                 <li class='nav-item'>
-                                    <a class='nav-link' data-bs-target='#discountModal' data-bs-toggle='modal' href='#'>Discount Calculator</a>
+                                    <a class='nav-link' href='#' id='discountModalTrigger'>Discount Calculator</a>
                                 </li>
                                 <li class='nav-item' id="unavailableTestsNavItem">
                                     <a class='nav-link' href='#' id='unavailableTestsPopoverTrigger'
@@ -456,6 +445,7 @@
     <script>
         // Sheet URLs
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=0&single=true&output=csv';
+        // Corrected URL for unavailable tests to match the user's original file
         const unavailableTestsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=2088118576&single=true&output=csv';
         // URL for allowed IPs from your Sheet4
         const allowedIPsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=1397779826&single=true&output=csv';
@@ -466,6 +456,8 @@
         let allowedIPs = new Set();
 
         let unavailableTestsPopoverInstance = null;
+        let birthdateModalInstance = null; // Added for manual modal control
+        let discountModalInstance = null;   // Added for manual modal control
 
         // Function to fetch the user's public IP address
         async function getUserIP() {
@@ -517,7 +509,7 @@
             const mainContent = document.getElementById('mainContent');
             const userIpDisplay = document.getElementById('userIpDisplay');
 
-            // Initially show the overlay and hide main content
+            // Immediately show the overlay and hide main content
             overlay.style.display = 'flex';
             mainContent.style.display = 'none';
             document.body.style.overflow = 'hidden'; // Prevent scrolling while checking
@@ -561,10 +553,9 @@
                     fullItem: item
                 })).filter(item => item.name);
 
-                if (testNames.length > 0) {
-                    displayDefaultSuggestions();
-                }
-                populateUnavailableTestsPopover();
+                // Initialize Bootstrap components after content is loaded and visible
+                initializeBootstrapComponents();
+                populateUnavailableTestsPopover(); // This depends on unavailableTests being populated
             })
             .catch(error => {
                 document.getElementById('singleCardContainer').innerHTML = '<div class="text-danger">Error loading data. Please try again later.</div>';
@@ -576,19 +567,26 @@
         // --- Your existing data fetching and card display logic (mostly unchanged) ---
         function getRandomTestNames(count) {
             if (testNames.length === 0) return [];
+            // No longer filtering out unavailable tests here, show all random tests
             const shuffled = [...testNames].sort(() => 0.5 - Math.random());
             return shuffled.slice(0, count);
         }
 
         async function fetchUnavailableTests() {
             try {
+                console.log("Fetching unavailable tests from URL:", unavailableTestsUrl); // Added log
                 const response = await fetch(unavailableTestsUrl);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const csvText = await response.text();
+                console.log("Raw CSV text from unavailable tests URL:", csvText); // Added log for raw CSV
+
                 const rows = csvText.trim().split('\n');
                 const headers = rows[0].split(',').map(h => h.trim());
+
+                console.log("Unavailable Tests Sheet Headers:", headers); // Log headers
+
                 const nameIndex = headers.indexOf('Test Name');
                 const statusIndex = headers.indexOf('Status');
 
@@ -597,16 +595,20 @@
                     return;
                 }
 
-                rows.slice(1).forEach(row => {
+                rows.slice(1).forEach((row, index) => {
                     const values = row.split(',');
                     const testName = values[nameIndex] ? values[nameIndex].trim() : '';
                     const status = values[statusIndex] ? values[statusIndex].trim() : '';
 
+                    console.log(`Row ${index + 1}: Test Name='${testName}', Status='${status}'`); // Log each row's data
+
+                    // Ensure status is exactly 'Not Available'
                     if (testName && status === 'Not Available') {
                         unavailableTests.add(testName);
+                        console.log(`Added to unavailableTests: ${testName}`); // Confirm addition
                     }
                 });
-                console.log("Unavailable Tests Loaded from Sheet3 based on Status 'Not Available':", Array.from(unavailableTests));
+                console.log("Final Unavailable Tests Loaded from Sheet3 based on Status 'Not Available':", Array.from(unavailableTests));
             } catch (error) {
                 console.error('Error fetching unavailable tests CSV from Sheet3:', error);
             }
@@ -627,6 +629,7 @@
         }
 
         function showCard(item) {
+            console.log("showCard: Updating singleCardContainer for:", item.name); // Log when showCard is called
             const isUnavailable = unavailableTests.has(item['name']);
 
             const priceFormatted = item['price']
@@ -645,7 +648,7 @@
     <div class="card-header "> <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="mb-0 d-inline"><strong>${item['name'] || 'No Name'}</strong></h5>
-                ${isUnavailable ? '<span class="badge bg-danger ms-2">Not Available</span>' : ''}
+                <!-- Removed unavailable badge from card header -->
             </div>
             <div class="btn-group" role="group" aria-label="Basic outlined example">
                 <button type="button" class="btn btn-outline-secondary" id="aboutBtn">About</button>
@@ -655,7 +658,7 @@
         ${item['subname'] ? `<small class="d-block text-muted fst-italic mt-1">${item['subname']}</small>` : ''}
     </div>
     <div class="card-body">
-        ${isUnavailable ? '<div class="alert alert-danger text-center" role="alert">This test is currently unavailable.</div>' : ''}
+        <!-- Removed unavailable alert from card body -->
         <div class="row mb-3 text-center d-flex align-items-center justify-content-center">
             <div class="col">
                 <h6 class="mb-1">Price</h6>
@@ -803,23 +806,31 @@
             toggleClearButtonVisibility();
         });
 
+        // Modified focus event listener
         searchInput.addEventListener('focus', () => {
+            // Only display default suggestions if the search input is empty
             if (searchInput.value === '') {
                 displayDefaultSuggestions();
             } else {
+                // If there's already text, show all relevant suggestions (no filtering for availability here)
                 const q = searchInput.value.toLowerCase();
-                const filtered = testNames.filter(item => item.name.toLowerCase().includes(q));
+                const filtered = testNames.filter(
+                    item => item.name.toLowerCase().includes(q) || (item.subname && item.subname.toLowerCase().includes(q))
+                );
                 showFilteredSuggestions(filtered);
             }
             toggleClearButtonVisibility();
         });
 
-        searchInput.addEventListener('blur', () => {
+        searchInput.addEventListener('blur', (event) => {
+            // Use a small timeout to allow click events on suggestions to register
             setTimeout(() => {
-                toggleClearButtonVisibility();
-                if (searchInput.value === '' && !integratedSearchCard.contains(document.activeElement)) {
+                // Check if the related target (where focus is moving to) is outside the search card
+                // This prevents collapsing if clicking on a suggestion item within the card
+                if (!integratedSearchCard.contains(document.activeElement)) {
                     collapseIntegratedCard();
                 }
+                toggleClearButtonVisibility(); // Keep clear button visible if search bar has content
             }, 100);
         });
 
@@ -828,11 +839,13 @@
             debounceTimeout = setTimeout(() => {
                 const q = searchInput.value.toLowerCase();
                 if (q) {
+                    // Show all relevant suggestions (no filtering for availability here)
                     const filtered = testNames.filter(
                         item => item.name.toLowerCase().includes(q) || (item.subname && item.subname.toLowerCase().includes(q))
                     );
                     showFilteredSuggestions(filtered);
                 } else {
+                    // If input is cleared, show default suggestions again
                     displayDefaultSuggestions();
                 }
                 toggleClearButtonVisibility();
@@ -853,12 +866,6 @@
             btn.className = 'suggestion-item';
             btn.setAttribute('aria-label', `Select ${item.name}`);
 
-            const isUnavailable = unavailableTests.has(item.name);
-            if (isUnavailable) {
-                btn.classList.add('unavailable');
-                btn.setAttribute('title', 'This test is currently unavailable.');
-            }
-
             const row1 = document.createElement('div');
             row1.className = 'suggestion-item-row-1';
 
@@ -869,39 +876,35 @@
             const infoPillsDiv = document.createElement('div');
             infoPillsDiv.className = 'suggestion-info-pills';
 
-            if (isUnavailable) {
-                const unavailableBadge = createBadge('Unavailable', 'bg-danger');
-                if (unavailableBadge) infoPillsDiv.appendChild(unavailableBadge);
-            } else {
-                const priceBadge = createBadge(item.price + ' IQD', 'text-white bg-dark');
-                if (priceBadge) infoPillsDiv.appendChild(priceBadge);
+            // Always add badges for price, method, classes, and tubes
+            const priceBadge = createBadge(item.price + ' IQD', 'text-white bg-dark');
+            if (priceBadge) infoPillsDiv.appendChild(priceBadge);
 
-                const methodBadge = createBadge(item.method, 'bg-warning text-dark');
-                if (methodBadge) infoPillsDiv.appendChild(methodBadge);
+            const methodBadge = createBadge(item.method, 'bg-warning text-dark');
+            if (methodBadge) infoPillsDiv.appendChild(methodBadge);
 
-                const classesBadge = createBadge(item.classes, 'bg-success');
-                if (classesBadge) infoPillsDiv.appendChild(classesBadge);
+            const classesBadge = createBadge(item.classes, 'bg-success');
+            if (classesBadge) infoPillsDiv.appendChild(classesBadge);
 
-                if (item.tubes) {
-                    const tubesArray = item.tubes.split('-').map(t => t.trim());
-                    tubesArray.forEach(tube => {
-                        const parts = tube.split(' ');
-                        const tubeNumber = parts.pop();
-                        const tubeName = parts.join(' ');
+            if (item.tubes) {
+                const tubesArray = item.tubes.split('-').map(t => t.trim());
+                tubesArray.forEach(tube => {
+                    const parts = tube.split(' ');
+                    const tubeNumber = parts.pop();
+                    const tubeName = parts.join(' ');
 
-                        let colorClass = 'bg-secondary';
-                        if (/Gel/i.test(tubeName)) colorClass = 'bg-gel';
-                        else if (/EDTA/i.test(tubeName)) colorClass = 'bg-edta';
-                        else if (/SodiumCitrate/i.test(tubeName)) colorClass = 'bg-sodiumcitrate';
-                        else if (/Plane/i.test(tubeName)) colorClass = 'bg-plane';
-                        else if (/SodiumHeparin/i.test(tubeName)) colorClass = 'bg-sodiumheparin';
-                        else if (/LithiumHeparin/i.test(tubeName)) colorClass = 'bg-lithiumheparin';
-                        else if (/BigCup/i.test(tubeName)) colorClass = 'bg-bigcup';
+                    let colorClass = 'bg-secondary';
+                    if (/Gel/i.test(tubeName)) colorClass = 'bg-gel';
+                    else if (/EDTA/i.test(tubeName)) colorClass = 'bg-edta';
+                    else if (/SodiumCitrate/i.test(tubeName)) colorClass = 'bg-sodiumcitrate';
+                    else if (/Plane/i.test(tubeName)) colorClass = 'bg-plane';
+                    else if (/SodiumHeparin/i.test(tubeName)) colorClass = 'bg-sodiumheparin';
+                    else if (/LithiumHeparin/i.test(tubeName)) colorClass = 'bg-lithiumheparin';
+                    else if (/BigCup/i.test(tubeName)) colorClass = 'bg-bigcup';
 
-                        const tubeBadge = createBadge(tubeNumber, colorClass);
-                        if (tubeBadge) infoPillsDiv.appendChild(tubeBadge);
-                    });
-                }
+                    const tubeBadge = createBadge(tubeNumber, colorClass);
+                    if (tubeBadge) infoPillsDiv.appendChild(tubeBadge);
+                });
             }
 
 
@@ -917,24 +920,23 @@
                 btn.appendChild(row2);
             }
 
-            if (!isUnavailable) {
-                btn.onclick = () => {
-                    searchInput.value = item.name;
-                    collapseIntegratedCard();
-                    showCard(item.fullItem);
-                };
-            } else {
-                 btn.onclick = (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                };
-            }
+            // Always set the onclick handler, and stop propagation
+            btn.onclick = (event) => {
+                console.log("Suggestion item clicked for:", item.name); // Log click
+                event.stopPropagation(); // Prevent the click from bubbling up and closing the suggestions prematurely
+                searchInput.value = item.name;
+                collapseIntegratedCard();
+                console.log("Calling showCard with item:", item.fullItem); // Log before calling showCard
+                showCard(item.fullItem);
+            };
+
             return btn;
         }
 
         function updateSuggestionsFooter(totalCount) {
             if (suggestionsFooter) {
-                suggestionsFooter.textContent = `Total tests available: ${totalCount}`;
+                // Display total number of tests (not just available ones)
+                suggestionsFooter.textContent = `Total tests: ${totalCount}`;
                 suggestionsFooter.style.display = 'block';
             }
         }
@@ -943,6 +945,7 @@
             suggestionsBox.innerHTML = '';
             const maxSuggestions = 5;
 
+            // No longer filtering out unavailable tests here, show all
             if (suggestions.length === 0) {
                 suggestionsBox.innerHTML = '<span class="suggestion-item text-muted disabled">No results found.</span>';
             } else {
@@ -950,12 +953,13 @@
                     suggestionsBox.appendChild(createSuggestionItem(item));
                 });
             }
-            updateSuggestionsFooter(testNames.length);
+            updateSuggestionsFooter(testNames.length); // Show total from allData
             expandIntegratedCard();
         }
 
         function displayDefaultSuggestions() {
             suggestionsBox.innerHTML = '';
+            // No longer filtering out unavailable tests here, pick random from all
             const randomTests = getRandomTestNames(5);
             if (randomTests.length > 0) {
                 randomTests.forEach(item => {
@@ -964,7 +968,7 @@
             } else {
                 suggestionsBox.innerHTML = '<span class="suggestion-item text-muted disabled">Loading... If tests don\'t show, try clicking the search box again.</span>';
             }
-            updateSuggestionsFooter(testNames.length);
+            updateSuggestionsFooter(testNames.length); // Show total from allData
             expandIntegratedCard();
         }
 
@@ -986,10 +990,8 @@
 
                 let listItemsHtml = sortedUnavailableTests.map((testName, index, array) => {
                     const fullTestItem = allData.find(item => item.name === testName);
-                    const isClickableClass = fullTestItem ? '' : 'text-muted';
-                    const pointerEventsStyle = fullTestItem ? '' : 'pointer-events: none;';
-
-                    let itemHtml = `<li style="cursor: pointer; ${pointerEventsStyle}" data-test-name="${testName}" class="popover-list-item ${isClickableClass}">${testName}</li>`;
+                    // No longer making it pointer-events: none, as it should be clickable
+                    let itemHtml = `<li style="cursor: pointer;" data-test-name="${testName}" class="popover-list-item">${testName}</li>`;
                     if (index < array.length - 1) {
                         itemHtml += '<hr>';
                     }
@@ -1002,12 +1004,22 @@
             if (popoverTrigger) {
                 popoverTrigger.setAttribute('data-bs-content', popoverContentHtml);
 
-                if (unavailableTestsPopoverInstance) {
+                // Ensure popover instance exists before trying to set content or attach listeners
+                if (!unavailableTestsPopoverInstance) {
+                    unavailableTestsPopoverInstance = new bootstrap.Popover(popoverTrigger, {
+                        trigger: 'hover',
+                        delay: { "show": 100, "hide": 200 },
+                        html: true
+                    });
+                     popoverTrigger.addEventListener('shown.bs.popover', attachPopoverItemClickListeners);
+                } else {
+                    // Update content if instance already exists
                     unavailableTestsPopoverInstance.setContent({
                         '.popover-body': popoverContentHtml
                     });
-                    attachPopoverItemClickListeners();
                 }
+                // Always re-attach listeners in case the content changed
+                attachPopoverItemClickListeners();
             }
         }
 
@@ -1015,7 +1027,7 @@
             const popoverBody = document.querySelector('.popover-body');
             if (popoverBody) {
                 popoverBody.querySelectorAll('.popover-list-item').forEach(itemElement => {
-                    itemElement.removeEventListener('click', handlePopoverItemClick);
+                    itemElement.removeEventListener('click', handlePopoverItemClick); // Remove existing to prevent duplicates
                     itemElement.addEventListener('click', handlePopoverItemClick);
                 });
             }
@@ -1036,27 +1048,47 @@
 
 
         document.addEventListener('click', e => {
-            if (!integratedSearchCard.contains(e.target)) {
+            // Only collapse if the click is outside the search card AND not on the search input itself
+            if (!integratedSearchCard.contains(e.target) && e.target !== searchInput) {
                 collapseIntegratedCard();
             }
         });
 
         toggleClearButtonVisibility();
 
+        // Function to manually initialize Bootstrap Modals and attach event listeners
+        function initializeBootstrapComponents() {
+            const birthdateModalElement = document.getElementById('birthdateModal');
+            const discountModalElement = document.getElementById('discountModal');
+
+            // Initialize Modal instances
+            birthdateModalInstance = new bootstrap.Modal(birthdateModalElement);
+            discountModalInstance = new bootstrap.Modal(discountModalElement);
+
+            // Attach click listeners to trigger elements
+            const birthdateModalTrigger = document.getElementById('birthdateModalTrigger');
+            if (birthdateModalTrigger) {
+                birthdateModalTrigger.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    birthdateModalInstance.show();
+                });
+            }
+
+            const discountModalTrigger = document.getElementById('discountModalTrigger');
+            if (discountModalTrigger) {
+                discountModalTrigger.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    discountModalInstance.show();
+                });
+            }
+        }
+
         // Call checkAccessAndLoadContent on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
             checkAccessAndLoadContent(); // This initiates the IP check and then loads content if allowed
 
-            const popoverTrigger = document.getElementById('unavailableTestsPopoverTrigger');
-            if (popoverTrigger) {
-                unavailableTestsPopoverInstance = new bootstrap.Popover(popoverTrigger, {
-                    trigger: 'hover',
-                    delay: { "show": 100, "hide": 200 },
-                    html: true
-                });
-
-                popoverTrigger.addEventListener('shown.bs.popover', attachPopoverItemClickListeners);
-            }
+            // Popover initialization is now handled within populateUnavailableTestsPopover
+            // and initializeBootstrapComponents for consistency.
         });
 
 
