@@ -311,7 +311,6 @@
 </style>
 </head>
 <body>
-    <!-- Access Denied Overlay (initially hidden, will be shown by JS if access is denied) -->
     <div id="accessDeniedOverlay" class="access-denied-message" style="display: none;">
         <i class="fas fa-times-circle icon"></i>
         <h1>Access Denied!</h1>
@@ -319,7 +318,6 @@
         <p>Your IP: <span id="userIpDisplay">Loading...</span></p>
     </div>
 
-    <!-- The rest of your existing HTML content (will be hidden if access is denied) -->
     <div id="mainContent" style="display: none;">
         <div aria-hidden='true' aria-labelledby='birthdateModalLabel' class='modal fade' id='birthdateModal' tabindex='-1'>
             <div class='modal-dialog'>
@@ -431,17 +429,14 @@
         </div>
 
         <div class="container" id="singleCardContainer">
-            <!-- This container will hold the test details or the list of unavailable tests -->
-        </div>
+            </div>
 
         <footer class='bg-body-tertiary fixed-bottom text-center border-top'>
             <div class='container'>
                 © <script>document.write( new Date().getFullYear() );</script> <span>Developed by <a class='text-decoration-none' href='https://www.behance.net/volakurd' style='color: #373A40;' target='_blank'><b>R.V</b></a></span>
             </div>
         </footer>
-    </div> <!-- End of mainContent div -->
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Sheet URLs
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=0&single=true&output=csv';
@@ -452,7 +447,8 @@
 
         let allData = [];
         let testNames = [];
-        let unavailableTests = new Set();
+        let unavailableTests = new Set(); // This set will now only track "Unavailable"
+        let testStatus = new Map(); // Stores status like "Unavailable", "Sent Out"
         let allowedIPs = new Set();
 
         let unavailableTestsPopoverInstance = null;
@@ -539,7 +535,7 @@
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.text();
                 }),
-                fetchUnavailableTests()
+                fetchTestStatuses() // Changed function name
             ])
             .then(([csvText]) => {
                 allData = parseCSV(csvText);
@@ -555,7 +551,7 @@
 
                 // Initialize Bootstrap components after content is loaded and visible
                 initializeBootstrapComponents();
-                populateUnavailableTestsPopover(); // This depends on unavailableTests being populated
+                populateUnavailableTestsPopover(); // This depends on unavailableTests and testStatus being populated
             })
             .catch(error => {
                 document.getElementById('singleCardContainer').innerHTML = '<div class="text-danger">Error loading data. Please try again later.</div>';
@@ -572,28 +568,33 @@
             return shuffled.slice(0, count);
         }
 
-        async function fetchUnavailableTests() {
+        // Renamed from fetchUnavailableTests to fetchTestStatuses
+        async function fetchTestStatuses() {
             try {
-                console.log("Fetching unavailable tests from URL:", unavailableTestsUrl); // Added log
+                console.log("Fetching test statuses from URL:", unavailableTestsUrl); // Added log
                 const response = await fetch(unavailableTestsUrl);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const csvText = await response.text();
-                console.log("Raw CSV text from unavailable tests URL:", csvText); // Added log for raw CSV
+                console.log("Raw CSV text from test statuses URL:", csvText); // Added log for raw CSV
 
                 const rows = csvText.trim().split('\n');
                 const headers = rows[0].split(',').map(h => h.trim());
 
-                console.log("Unavailable Tests Sheet Headers:", headers); // Log headers
+                console.log("Test Statuses Sheet Headers:", headers); // Log headers
 
                 const nameIndex = headers.indexOf('Test Name');
                 const statusIndex = headers.indexOf('Status');
 
                 if (nameIndex === -1 || statusIndex === -1) {
-                    console.warn("'Test Name' or 'Status' column not found in unavailable tests sheet. Cannot determine unavailable tests.");
+                    console.warn("'Test Name' or 'Status' column not found in test statuses sheet. Cannot determine test statuses.");
                     return;
                 }
+
+                // Clear previous data
+                unavailableTests.clear();
+                testStatus.clear();
 
                 rows.slice(1).forEach((row, index) => {
                     const values = row.split(',');
@@ -602,15 +603,19 @@
 
                     console.log(`Row ${index + 1}: Test Name='${testName}', Status='${status}'`); // Log each row's data
 
-                    // Ensure status is exactly 'Not Available'
-                    if (testName && status === 'Not Available') {
-                        unavailableTests.add(testName);
-                        console.log(`Added to unavailableTests: ${testName}`); // Confirm addition
+                    if (testName) {
+                        testStatus.set(testName, status); // Store the status
+                        // Update unavailableTests set for backward compatibility with older logic if needed
+                        if (status === 'Unavailable') { // Changed 'Not Available' to 'Unavailable'
+                            unavailableTests.add(testName);
+                            console.log(`Added to unavailableTests: ${testName}`);
+                        }
                     }
                 });
-                console.log("Final Unavailable Tests Loaded from Sheet3 based on Status 'Not Available':", Array.from(unavailableTests));
+                console.log("Final Test Statuses Loaded:", Array.from(testStatus.entries()));
+                console.log("Final Unavailable Tests Loaded (for badge count):", Array.from(unavailableTests));
             } catch (error) {
-                console.error('Error fetching unavailable tests CSV from Sheet3:', error);
+                console.error('Error fetching test statuses CSV from Sheet3:', error);
             }
         }
 
@@ -630,7 +635,7 @@
 
         function showCard(item) {
             console.log("showCard: Updating singleCardContainer for:", item.name); // Log when showCard is called
-            const isUnavailable = unavailableTests.has(item['name']);
+            const currentTestStatus = testStatus.get(item['name']) || '';
 
             const priceFormatted = item['price']
                 ? item['price'].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' IQD'
@@ -641,6 +646,20 @@
             const isFinishtimeNemawa = item['finishtime'] && item['finishtime'].trim() === 'نەماوە';
             const finishtimeClass = isFinishtimeNemawa ? 'bg-danger text-white p-2 rounded' : '';
 
+            let statusAlertHtml = '';
+            if (currentTestStatus === 'Unavailable') { // Changed 'Not Available' to 'Unavailable'
+                statusAlertHtml = `
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i> This test is currently unavailable.
+                    </div>
+                `;
+            } else if (currentTestStatus === 'Sent Out') {
+                statusAlertHtml = `
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-truck me-2"></i> This test is sent out to another lab.
+                    </div>
+                `;
+            }
 
             const container = document.getElementById('singleCardContainer');
             container.innerHTML = `
@@ -648,8 +667,7 @@
     <div class="card-header "> <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="mb-0 d-inline"><strong>${item['name'] || 'No Name'}</strong></h5>
-                <!-- Removed unavailable badge from card header -->
-            </div>
+                </div>
             <div class="btn-group" role="group" aria-label="Basic outlined example">
                 <button type="button" class="btn btn-outline-secondary" id="aboutBtn">About</button>
                 <button type="button" class="btn btn-outline-secondary" id="prepBtn">Preparation</button>
@@ -658,7 +676,7 @@
         ${item['subname'] ? `<small class="d-block text-muted fst-italic mt-1">${item['subname']}</small>` : ''}
     </div>
     <div class="card-body">
-        <!-- Removed unavailable alert from card body -->
+        ${statusAlertHtml}
         <div class="row mb-3 text-center d-flex align-items-center justify-content-center">
             <div class="col">
                 <h6 class="mb-1">Price</h6>
@@ -978,33 +996,56 @@
 
             let popoverContentHtml = '';
 
-            if (unavailableTests.size === 0) {
-                popoverContentHtml = '<p class="text-muted mb-0">No unavailable tests.</p>';
+            const unavailable = [];
+            const sentOut = [];
+
+            testStatus.forEach((status, testName) => {
+                if (status === 'Unavailable') { // Changed 'Not Available' to 'Unavailable'
+                    unavailable.push(testName);
+                } else if (status === 'Sent Out') {
+                    sentOut.push(testName);
+                }
+            });
+
+            const totalSpecialTests = unavailable.length + sentOut.length;
+
+            if (totalSpecialTests === 0) {
+                popoverContentHtml = '<p class="text-muted mb-0">No special status tests.</p>';
                 unavailableTestsBadge.classList.add('visually-hidden');
                 unavailableTestsBadge.textContent = '0';
             } else {
                 unavailableTestsBadge.classList.remove('visually-hidden');
-                unavailableTestsBadge.textContent = unavailableTests.size.toString();
+                unavailableTestsBadge.textContent = totalSpecialTests.toString();
 
-                const sortedUnavailableTests = Array.from(unavailableTests).sort((a, b) => a.localeCompare(b));
+                let listItemsHtml = '';
 
-                let listItemsHtml = sortedUnavailableTests.map((testName, index, array) => {
-                    const fullTestItem = allData.find(item => item.name === testName);
-                    // No longer making it pointer-events: none, as it should be clickable
-                    let itemHtml = `<li style="cursor: pointer;" data-test-name="${testName}" class="popover-list-item">${testName}</li>`;
-                    if (index < array.length - 1) {
-                        itemHtml += '<hr>';
+                if (unavailable.length > 0) {
+                    const sortedUnavailable = unavailable.sort((a, b) => a.localeCompare(b));
+                    listItemsHtml += '<h6><i class="fas fa-times-circle text-danger me-2"></i>Unavailable Tests</h6><ul>';
+                    listItemsHtml += sortedUnavailable.map(testName =>
+                        `<li style="cursor: pointer;" data-test-name="${testName}" class="popover-list-item">${testName}</li>`
+                    ).join('<hr>');
+                    listItemsHtml += '</ul>';
+                }
+
+                if (sentOut.length > 0) {
+                    if (unavailable.length > 0) {
+                        listItemsHtml += '<hr>'; // Separator if both sections exist
                     }
-                    return itemHtml;
-                }).join('');
+                    const sortedSentOut = sentOut.sort((a, b) => a.localeCompare(b));
+                    listItemsHtml += '<h6><i class="fas fa-truck text-warning me-2"></i>Sent Out Tests</h6><ul>';
+                    listItemsHtml += sortedSentOut.map(testName =>
+                        `<li style="cursor: pointer;" data-test-name="${testName}" class="popover-list-item">${testName}</li>`
+                    ).join('<hr>');
+                    listItemsHtml += '</ul>';
+                }
 
-                popoverContentHtml = `<ul>${listItemsHtml}</ul>`;
+                popoverContentHtml = listItemsHtml;
             }
 
             if (popoverTrigger) {
                 popoverTrigger.setAttribute('data-bs-content', popoverContentHtml);
 
-                // Ensure popover instance exists before trying to set content or attach listeners
                 if (!unavailableTestsPopoverInstance) {
                     unavailableTestsPopoverInstance = new bootstrap.Popover(popoverTrigger, {
                         trigger: 'hover',
@@ -1013,12 +1054,10 @@
                     });
                      popoverTrigger.addEventListener('shown.bs.popover', attachPopoverItemClickListeners);
                 } else {
-                    // Update content if instance already exists
                     unavailableTestsPopoverInstance.setContent({
                         '.popover-body': popoverContentHtml
                     });
                 }
-                // Always re-attach listeners in case the content changed
                 attachPopoverItemClickListeners();
             }
         }
