@@ -348,13 +348,48 @@
                 </div>
             </div>
         </div>
-
+  <!-- Main Data Modal -->
+  <div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tableModalLabel">Data Table</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>House No</th>
+                  <th>Phone Number</th>
+                  <th>Name</th>
+                  <th>Card ID</th>
+                  <th>Img ID</th>
+                </tr>
+              </thead>
+              <tbody id="dataTableBody">
+                <!-- Data will be populated here -->
+                <tr>
+                  <td colspan="5" class="text-center">Loading data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 <!-- Discount Instructions Modal (New) -->
-    <div class="modal fade"  tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+   <div class="modal fade" id="discountInstructionsModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="discountModalLabel">Discount Instructions</h5>
+                    <h5 class="modal-title" >Discount Instructions</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -461,20 +496,20 @@
                     <div class='container'>
                         <div class='d-flex'>
                             <ul class='navbar-nav'>
+                                <li class='nav-item'><a class='nav-link' href id='birthdateModalTrigger'>حساباتى بەروارى لە دایکبوون</a>
+                                </li>
+<li class='nav-item'><a class='nav-link' href='#' data-bs-toggle="modal" data-bs-target="#tableModal">دراوسێى سمارت</a></li>
                                 <li class='nav-item'>
-                                    <a class='nav-link' href='#' id='birthdateModalTrigger'>Birthdate Calculator</a>
+                                    <a class='nav-link' href='#' id="discountInstructionsLink">ڕێنماى داشکاندن</a>
                                 </li>
                                 <li class='nav-item'>
-                                    <a class='nav-link' href='#' id="discountInstructionsLink">Discount Instruction</a>
-                                </li>
-                                <li class='nav-item'>
-                                    <a class='nav-link' href='#' id='discountModalTrigger'>Discount Calculator</a>
+                                    <a class='nav-link' href='#' id='discountModalTrigger'>حاسیبەى داشکاندن</a>
                                 </li>
                                 <li class='nav-item' id="unavailableTestsNavItem">
                                     <a class='nav-link' href='#' id='unavailableTestsPopoverTrigger'
                                        data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
                                        data-bs-title="Unavailable Tests" data-bs-content="Loading...">
-                                        Unavailable Tests
+                                        بەردەست نەبووەکان
                                         <span class="badge rounded-pill bg-danger ms-1 visually-hidden" id="unavailableTestsBadge">
                                             0
                                             <span class="visually-hidden">unavailable tests</span>
@@ -1238,7 +1273,7 @@
        // JavaScript for fetching data and populating the new modal table
         document.getElementById("discountInstructionsLink").addEventListener("click", async function (event) {
             event.preventDefault();
-            const tableBody = document.getElementById("discountTableBody");
+            const tableBody = document.getElementById("discountinstructioTableBody");
             
             // Show loading message while fetching data
             tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Loading data...</td></tr>';
@@ -1292,7 +1327,78 @@
                 discountModal.show();
             }
         });
+
+const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=324610944&single=true&output=csv';
+    const dataTableBody = document.getElementById('dataTableBody');
+   
+ // Function to fetch and parse the CSV data
+    async function fetchData() {
+      try {
+        const response = await fetch(dataUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const csvText = await response.text();
+        
+        // Simple CSV parsing
+        const rows = csvText.split('\n').filter(row => row.trim() !== '');
+        
+        // Remove the header row
+        const dataRows = rows.slice(1);
+        
+        // Convert CSV rows into an array of objects
+        allData = dataRows.map(row => {
+          const columns = row.split(',');
+          return {
+            houseNo: columns[0] ? columns[0].trim() : '',
+            phoneNumber: columns[1] ? columns[1].trim() : '',
+            name: columns[2] ? columns[2].trim() : '',
+            cardId: columns[3] ? columns[3].trim() : '',
+            imgId: columns[4] ? columns[4].trim() : ''
+          };
+        });
+
+        // Initial render of the table
+        renderTable(allData);
+
+      } catch (error) {
+        console.error('Could not fetch the data:', error);
+        dataTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load data. Please check the network connection or data URL.</td></tr>';
+      }
+    }
+
+    // Function to render the table with the provided data
+    function renderTable(data) {
+      if (data.length === 0) {
+        dataTableBody.innerHTML = '<tr><td colspan="5" class="text-center">No matching records found.</td></tr>';
+        return;
+      }
+      
+      const html = data.map(row => `
+        <tr>
+          <td>${row.houseNo}</td>
+          <td>${row.phoneNumber}</td>
+          <td>${row.name}</td>
+          <td>${row.cardId}</td>
+          <td class="img-id-cell" title="${row.imgId}">
+            <a href="${row.imgId}" target="_blank" rel="noopener noreferrer">
+              ${row.imgId}
+            </a>
+          </td>
+        </tr>
+      `).join('');
+      
+      dataTableBody.innerHTML = html;
+    }
+
+    // Fetch data when the page loads
+    fetchData();
+   
+
+    
+
     </script>
 </body>
 </html>
+
 
