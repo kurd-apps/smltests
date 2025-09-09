@@ -308,6 +308,13 @@
         font-size: 3em;
         color: #dc3545;
     }
+ /* Style for the Img ID cell */
+    .img-id-cell {
+      max-width: 100px; /* Make column compact */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 </style>
 </head>
 <body>
@@ -348,7 +355,7 @@
                 </div>
             </div>
         </div>
-  <!-- Main Data Modal -->
+<!-- Main Data Modal -->
   <div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen modal-dialog-centered">
       <div class="modal-content">
@@ -384,6 +391,7 @@
       </div>
     </div>
   </div>
+
 <!-- Discount Instructions Modal (New) -->
    <div class="modal fade" id="discountInstructionsModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
@@ -1400,5 +1408,6 @@ const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptl
     </script>
 </body>
 </html>
+
 
 
