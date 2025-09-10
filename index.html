@@ -326,6 +326,7 @@
     </div>
 
     <div id="mainContent" style="display: none;">
+<!-- calculate dob-->
         <div aria-hidden='true' aria-labelledby='birthdateModalLabel' class='modal fade' id='birthdateModal' tabindex='-1'>
             <div class='modal-dialog'>
                 <div class='modal-content'>
@@ -392,79 +393,84 @@
     </div>
   </div>
 
-<!-- Discount Instructions Modal (New) -->
-   <div class="modal fade" id="discountInstructionsModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" >Discount Instructions</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-<div dir='rtl'>
-                    <h5 style='display: block; margin: 0 0 30px;' >ڕێنمایى تایبەت بە پۆلێنکردنى سەرجەم ئەو کەسانەى کە داشکاندنەکانى تاوەرى تەندروستى سمارت دەیانگرێتەوە بەشێوەیەکى بەردەوام&#1548; وە لەم خشتەیەى خوارەوەدا شێوازى داشکاندنەکە دیارى کراوە.</h5> 
-                    <ol>
-                        <li>
-                            گروپى A
-                            <ul>
-                                <li>دەستەى بەڕێوەبردنى تاوەرى تەندروستى سمارت</li>
-                                <li>سەرجەم کلینیکى تاوەرەکە</li>
-                            </ul>
-                        </li>
-                        <li>
-                            گروپى B
-                            <ul>
-                                <li>ڕاوێژکار و هاوکارانى تاوەر</li>
-                                <li>بەڕێوبەر و جێگرى بەڕێوبەرى بەش</li>
-                            </ul>
-                        </li>
-                        <li>
-                            گروپى C
-                            <ul>
-                                <li>سەرپەرشتیارەکان(سوپەرڤایسەرکان) &#1548; تیم لیدەر</li>
-                            </ul>
-                        </li>
-                        <li>
-                            گروپى D
-                            <ul>
-                                <li>سەرجەم کارمەندانى تاوەرى تەندروستى سمارت</li>
-                                <li>چوار دراوسێى نزیکى تاوەرى تەندروستى سمارت</li>
-                                <li>کەسى پلەیەکى گروپى (A , B) (دايك &#1548; باوك &#1548; هاوسەر &#1548; منداڵ &#1548; خوشک &#1548; برا)</li>
-                            </ul>
-                        </li>
-                        <li>
-                            گروپى E
-                            <ul>
-<li>کەسى پلەیەکى (D,C) (دايك &#1548; باوك &#1548; هاوسەر &#1548; منداڵ &#1548; خوشک &#1548; برا)</li>
-                            </ul>
-                        </li>
-                    </ol>
-</div>
-                    <div class="table-responsive" dir='rtl'>
-                        <table class="table table-striped table-bordered">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th scope="col">بەش</th>
-                                    <th scope="col">گروپى A</th>
-                                    <th scope="col">گروپى B</th>
-                                    <th scope="col">گروپى C</th>
-                                    <th scope="col">گروپى D</th>
-                                    <th scope="col">گروپى E</th>
-                                </tr>
-                            </thead>
-                            <tbody id="discountTableBody">
-                                <!-- Table rows will be populated here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-center">
-                <p>Published Date: 06-02-2025 No:25-0284 Rev 004</p>
-                </div>
-            </div>
+<!--instruction modal -->
+<!-- Modal -->
+<div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="dataModalLabel">Google Sheet Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-center" id="loading-message">Loading data...</p>
+
+        <!-- New text and list added here -->
+        <div dir='rtl'>
+            <h5 style='display: block; margin: 0 0 30px;' >ڕێنمایى تایبەت بە پۆلێنکردنى سەرجەم ئەو کەسانەى کە داشکاندنەکانى تاوەرى تەندروستى سمارت دەیانگرێتەوە بەشێوەیەکى بەردەوام، وە لەم خشتەیەى خوارەوەدا شێوازى داشکاندنەکە دیارى کراوە.</h5>
+            <ol>
+                <li>
+                    گروپى A
+                    <ul>
+                        <li>دەستەى بەڕێوەبردنى تاوەرى تەندروستى سمارت</li>
+                        <li>سەرجەم کلینیکى تاوەرەکە</li>
+                    </ul>
+                </li>
+                <li>
+                    گروپى B
+                    <ul>
+                        <li>ڕاوێژکار و هاوکارانى تاوەر</li>
+                        <li>بەڕێوبەر و جێگرى بەڕێوبەرى بەش</li>
+                    </ul>
+                </li>
+                <li>
+                    گروپى C
+                    <ul>
+                        <li>سەرپەرشتیارەکان(سوپەرڤایسەرکان) ، تیم لیدەر</li>
+                    </ul>
+                </li>
+                <li>
+                    گروپى D
+                    <ul>
+                        <li>سەرجەم کارمەندانى تاوەرى تەندروستى سمارت</li>
+                        <li>چوار دراوسێى نزیکى تاوەرى تەندروستى سمارت</li>
+                        <li>کەسى پلەیەکى گروپى (A , B) (دايك ، باوك ، هاوسەر ، منداڵ ، خوشک ، برا)</li>
+                    </ul>
+                </li>
+                <li>
+                    گروپى E
+                    <ul>
+                        <li>کەسى پلەیەکى (D,C) (دايك ، باوك ، هاوسەر ، منداڵ ، خوشک ، برا)</li>
+                    </ul>
+                </li>
+            </ol>
         </div>
+
+        <div class="table-responsive d-none" id="dataTableContainer">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr id="table-header-row"></tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- New text below the table -->
+        <p dir="rtl">ئەو بەشەى کە هێماى (*) لێدراوە داشکاندن بۆ کارمەندى بەشەکانیان دەبێت دوو لەوەندەى ئەوەى لەڕێنماییەکە ئاماژەى پێداراوە</p>
+
+      </div>
+      <!-- Footer content updated -->
+      <div class="modal-footer justify-content-center">
+          <p>Published Date: 06-02-2025 No:25-0284 Rev 004</p>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
-    
+  </div>
+</div>
+
+
+    <!-- discount modal-->
         <div aria-hidden='true' aria-labelledby='discountModalLabel' class='modal fade' id='discountModal' role='dialog' tabindex='-1'>
             <div class='modal-dialog '>
                 <div class='modal-content'>
@@ -504,14 +510,14 @@
                     <div class='container'>
                         <div class='d-flex'>
                             <ul class='navbar-nav'>
-                                <li class='nav-item'><a class='nav-link' href id='birthdateModalTrigger'>حساباتى بەروارى لە دایکبوون</a>
+                                <li class='nav-item'><a class='nav-link' href id='birthdateModalTrigger'>ح. بەروارى لە دایکبوون</a>
                                 </li>
 <li class='nav-item'><a class='nav-link' href='#' data-bs-toggle="modal" data-bs-target="#tableModal">دراوسێى سمارت</a></li>
                                 <li class='nav-item'>
-                                    <a class='nav-link' href='#' id="discountInstructionsLink">ڕێنماى داشکاندن</a>
+                                    <a class='nav-link' href='#' data-bs-toggle="modal" data-bs-target="#dataModal">ڕێنماى داشکاندن</a>
                                 </li>
                                 <li class='nav-item'>
-                                    <a class='nav-link' href='#' id='discountModalTrigger'>حاسیبەى داشکاندن</a>
+                                    <a class='nav-link' href='#' id='discountModalTrigger'>ح. داشکاندن</a>
                                 </li>
                                 <li class='nav-item' id="unavailableTestsNavItem">
                                     <a class='nav-link' href='#' id='unavailableTestsPopoverTrigger'
@@ -1277,65 +1283,6 @@
             document.discountCalculator.disamount.value = Math.floor(disamount);
         }
         
-        
-       // JavaScript for fetching data and populating the new modal table
-        document.getElementById("discountInstructionsLink").addEventListener("click", async function (event) {
-            event.preventDefault();
-            const tableBody = document.getElementById("discountinstructioTableBody");
-            
-            // Show loading message while fetching data
-            tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Loading data...</td></tr>';
-            
-            // Construct the URL to fetch the Google Sheet data as a CSV
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1GXf9_syNE-_CDVr1ljM_tSgSwOOMQ7PcNxamQp7BS40/gviz/tq?tqx=out:csv&gid=1101817678';
-
-            try {
-                const response = await fetch(sheetUrl);
-                const csvText = await response.text();
-                
-                // Use a more robust regex to handle commas inside quotes
-                const rows = csvText.split('\n').slice(1, 16); // Take the first 15 rows, skipping the header
-                
-                // Clear the loading message and previous data
-                tableBody.innerHTML = '';
-                
-                rows.forEach(row => {
-                    // This regex correctly splits the CSV row, ignoring commas inside double quotes
-                    const columns = row.match(/(".*?"|[^",\s]+)(?=\s*\,|\s*$)/g).map(cell => cell.replace(/"/g, ''));
-                    const tr = document.createElement('tr');
-                    
-                    // Ensure we only have 6 columns and sanitize the text
-                    for (let i = 0; i < 6; i++) {
-                        const td = document.createElement('td');
-                        td.textContent = columns[i] ? columns[i] : '';
-                        tr.appendChild(td);
-                    }
-                    tableBody.appendChild(tr);
-                });
-
-                // Add two new rows with colspan="6" for summary
-                const firstColspanRow = document.createElement('tr');
-                const firstColspanTd = document.createElement('td');
-                firstColspanTd.setAttribute('colspan', '6');
-                firstColspanTd.textContent = 'ئەو بەشەى کە هێماى (*) لێدراوە داشکاندن بۆ کارمەندى بەشەکانیان دەبێت دوو لەوەندەى ئەوەى لەڕێنماییەکە ئاماژەى پێداراوە';
-                firstColspanRow.appendChild(firstColspanTd);
-                tableBody.appendChild(firstColspanRow);
-
-               
-
-                // Show the modal after data is populated
-                const discountModal = new bootstrap.Modal(document.getElementById('discountModal'));
-                discountModal.show();
-
-            } catch (error) {
-                console.error("Error fetching or parsing data:", error);
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-danger text-center">Failed to load data. Please try again later.</td></tr>';
-                // Still show the modal even if there's an error
-                const discountModal = new bootstrap.Modal(document.getElementById('discountModal'));
-                discountModal.show();
-            }
-        });
-
 const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptlT5LbigOgdgBH6FQzQ550n4fJWHihp9SKXyiDJqkdkxt9yNIwrT-uKqPCSKlN_6Yx/pub?gid=324610944&single=true&output=csv';
     const dataTableBody = document.getElementById('dataTableBody');
    
@@ -1402,12 +1349,81 @@ const dataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS46vORBn1D5ptl
     // Fetch data when the page loads
     fetchData();
    
+//instructoon modal
+document.addEventListener('DOMContentLoaded', () => {
+    // Get a reference to the modal element
+    const dataModal = document.getElementById('dataModal');
 
-    
+    // Add an event listener to the modal to run the fetch function when it's shown
+    dataModal.addEventListener('show.bs.modal', async () => {
+        const loadingMessage = document.getElementById('loading-message');
+        const dataTableContainer = document.getElementById('dataTableContainer');
+        const tableHeaderRow = document.getElementById('table-header-row');
+        const tableBody = document.getElementById('table-body');
 
+        // Show loading message and hide table
+        loadingMessage.classList.remove('d-none');
+        dataTableContainer.classList.add('d-none');
+        
+        // Clear previous data
+        tableHeaderRow.innerHTML = '';
+        tableBody.innerHTML = '';
+
+        const spreadsheetId = '1GXf9_syNE-_CDVr1ljM_tSgSwOOMQ7PcNxamQp7BS40';
+        const gid = '1101817678';
+        const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
+
+        try {
+            const response = await fetch(url);
+            const text = await response.text();
+            
+            // The response is not clean JSON, so we need to parse it manually
+            const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+            const data = JSON.parse(jsonText);
+
+            // Hide loading message and show table container
+            loadingMessage.classList.add('d-none');
+            dataTableContainer.classList.remove('d-none');
+
+            // Populate the table header (columns)
+            if (data.table && data.table.cols) {
+                const headerCols = data.table.cols.slice(0, 6); // Take the first 6 columns
+                headerCols.forEach(col => {
+                    const th = document.createElement('th');
+                    th.textContent = col.label || `Column ${col.id}`;
+                    tableHeaderRow.appendChild(th);
+                });
+            }
+
+            // Populate the table body (rows)
+            if (data.table && data.table.rows) {
+                const bodyRows = data.table.rows;
+                let rowsToRender = Math.min(bodyRows.length, 14); // Limit to 14 rows
+                for (let i = 0; i < rowsToRender; i++) {
+                    const rowData = bodyRows[i].c.slice(0, 6); // Take the first 6 cells of each row
+                    const tr = document.createElement('tr');
+                    rowData.forEach(cell => {
+                        const td = document.createElement('td');
+                        // Use the formatted value (f) if available, otherwise the raw value (v).
+                        // If both are null, default to an empty string.
+                        const cellValue = cell ? (cell.f || cell.v || '') : '';
+                        td.textContent = cellValue;
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                }
+            }
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            loadingMessage.textContent = 'Failed to load data. Please try again later.';
+        }
+    });
+});
     </script>
 </body>
 </html>
+
 
 
 
